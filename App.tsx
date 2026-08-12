@@ -2,15 +2,14 @@ import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { NavigationContainer } from '@react-navigation/native';
-import RootTabs from './src/navigation/RootTabs';
+import AdminShell from './src/components/admin/AdminShell';
 import { useAppTheme } from './src/theme';
 import { initDatabases } from './src/db/db';
 import { useSettingsStore } from './src/store/settingsStore';
 import { useAiStore } from './src/store/aiStore';
 
 export default function App() {
-  const { isDark, paperTheme, navTheme } = useAppTheme();
+  const { isDark, paperTheme } = useAppTheme();
 
   // Open + migrate the dual SQLite databases, then hydrate persisted state.
   // Non-blocking: a failure must never take down the UI shell.
@@ -34,10 +33,8 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <PaperProvider theme={paperTheme}>
-        <NavigationContainer theme={navTheme}>
-          <StatusBar style={isDark ? 'light' : 'dark'} />
-          <RootTabs />
-        </NavigationContainer>
+        <StatusBar style={isDark ? 'light' : 'dark'} />
+        <AdminShell />
       </PaperProvider>
     </SafeAreaProvider>
   );

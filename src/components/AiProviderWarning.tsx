@@ -1,27 +1,25 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
-import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { useAppTheme } from '../theme';
 import { useAiStore } from '../store/aiStore';
-import type { RootTabParamList } from '../navigation/RootTabs';
+import { useUiStore } from '../store/uiStore';
 
 /**
  * Shown on AI-dependent screens until at least one AI provider is configured
- * and active. Links straight to the Settings tab.
+ * and active. Links straight to the Settings section of the admin shell.
  */
 export default function AiProviderWarning() {
   const { colors } = useAppTheme();
   const providers = useAiStore((s) => s.providers);
   const loaded = useAiStore((s) => s.loaded);
-  const navigation = useNavigation<BottomTabNavigationProp<RootTabParamList>>();
+  const setSection = useUiStore((s) => s.setSection);
 
   if (!loaded) return null;
   if (providers.some((p) => p.isActive)) return null;
 
   return (
     <Pressable
-      onPress={() => navigation.navigate('Settings')}
+      onPress={() => setSection('settings')}
       style={[styles.banner, { backgroundColor: colors.accent, borderColor: colors.border }]}
     >
       <Ionicons name="warning" size={18} color={colors.onPrimary} />

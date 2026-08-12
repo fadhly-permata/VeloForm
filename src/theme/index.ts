@@ -13,7 +13,12 @@ import {
 } from '@react-navigation/native';
 import { useSettingsStore, type ThemeMode } from '../store/settingsStore';
 
-/** Semantic color tokens per mode. Single source of truth for the whole app. */
+/**
+ * Semantic color tokens per mode — single source of truth for the whole app.
+ *
+ * R-029: palet bergaya panel admin (AdminLTE): sidebar gelap, primary biru,
+ * body abu terang, kartu putih dengan border tipis.
+ */
 export interface Palette {
   primary: string;
   onPrimary: string;
@@ -29,40 +34,56 @@ export interface Palette {
   border: string;
   error: string;
   success: string;
+  /** Admin sidebar (AdminLTE) */
+  sidebar: string;
+  sidebarText: string;
+  sidebarMuted: string;
+  sidebarActiveBg: string;
+  sidebarAccent: string;
 }
 
 export const palette: Record<'light' | 'dark', Palette> = {
   light: {
-    primary: '#0d9488',
+    primary: '#2563eb',
     onPrimary: '#ffffff',
-    primaryContainer: '#ccfbf1',
-    onPrimaryContainer: '#0a3d38',
-    secondary: '#2563eb',
-    accent: '#d97706',
-    background: '#f4f6f7',
+    primaryContainer: '#dbeafe',
+    onPrimaryContainer: '#1e3a8a',
+    secondary: '#475569',
+    accent: '#f59e0b',
+    background: '#f1f5f9',
     surface: '#ffffff',
-    surfaceAlt: '#e9edef',
-    text: '#17211f',
-    textMuted: '#5b6a66',
-    border: '#d7dedb',
+    surfaceAlt: '#f8fafc',
+    text: '#0f172a',
+    textMuted: '#64748b',
+    border: '#e2e8f0',
     error: '#dc2626',
     success: '#16a34a',
+    sidebar: '#343a40',
+    sidebarText: '#c2c7d0',
+    sidebarMuted: '#8f969e',
+    sidebarActiveBg: '#3f474e',
+    sidebarAccent: '#007bff',
   },
   dark: {
-    primary: '#2dd4bf',
-    onPrimary: '#04302c',
-    primaryContainer: '#11504a',
-    onPrimaryContainer: '#b7f4e9',
-    secondary: '#93c5fd',
+    primary: '#60a5fa',
+    onPrimary: '#0f172a',
+    primaryContainer: '#1e3a8a',
+    onPrimaryContainer: '#dbeafe',
+    secondary: '#94a3b8',
     accent: '#fbbf24',
-    background: '#0a0f12',
-    surface: '#11181c',
-    surfaceAlt: '#1a2429',
-    text: '#e6ecee',
-    textMuted: '#8ba0a0',
-    border: '#253238',
+    background: '#2f353b',
+    surface: '#3a4047',
+    surfaceAlt: '#454b52',
+    text: '#e2e8f0',
+    textMuted: '#a6aeb7',
+    border: '#4a5158',
     error: '#f87171',
     success: '#4ade80',
+    sidebar: '#24292f',
+    sidebarText: '#c2c7d0',
+    sidebarMuted: '#868e96',
+    sidebarActiveBg: '#2f363d',
+    sidebarAccent: '#60a5fa',
   },
 };
 

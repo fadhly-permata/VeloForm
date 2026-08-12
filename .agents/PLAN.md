@@ -79,8 +79,8 @@ Fase 1 dan 2 bisa dikerjakan paralel; Fase 3 butuh Fase 2; Fase 4 butuh Fase 3.
 
 | Revisi | Paket | Deskripsi | Prioritas | Status |
 |--------|-------|-----------|-----------|--------|
-| R-029 | WP-21 | **Desain ulang tema ala admin (AdminLTE)** — layout sidebar, dashboard admin, visual panel admin; menggantikan tema eksisting | Tinggi | 🔲 |
-| R-030 | WP-22 | **Auth Supabase lengkap** — login Google + email (dengan konfirmasi), user role (admin/operator/dll), gate AI-modify hanya untuk admin | Tinggi | 🔲 |
+| R-029 | WP-21 | **Desain ulang tema ala admin (AdminLTE)** — layout sidebar, dashboard admin, visual panel admin; menggantikan tema eksisting | Tinggi | ✅ |
+| R-030 | WP-22 | **Auth Supabase** — login **Google** saja (login email dihapus karena user tidak punya domain/SMTP sendiri — 11:27), user role (admin/operator/dll), gate AI-modify hanya untuk admin | Tinggi | 🔲 |
 | R-031 | WP-23 | **Multi-tenant per nama usaha** — grouping user per nama usaha; isolasi data & desain form antar usaha (A ≠ B) via RLS | Tinggi | 🔲 |
 
 **Urutan:** R-029 → R-030 → R-031 (lalu lanjut R-028 & fase 3–5).

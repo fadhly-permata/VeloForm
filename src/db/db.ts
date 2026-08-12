@@ -36,9 +36,25 @@ const SYSTEM_MIGRATIONS: string[][] = [
 // Business-data schema arrives with Phase 4/5 (WP-19, WP-20, WP-23).
 const APP_MIGRATIONS: string[][] = [];
 
+/** Tracks the applied schema version per DB. `PRAGMA user_version` is avoided
+ *  because wa-sqlite (expo-sqlite web) cannot prepare PRAGMA statements. */
+const SCHEMA_TABLE_SQL = `CREATE TABLE IF NOT EXISTS schema_migrations (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  version INTEGER NOT NULL
+);`;
+const SCHEMA_SEED_SQL = `INSERT OR IGNORE INTO schema_migrations (id, version) VALUES (1, 0);`;
+
+async function getSchemaVersion(db: SQLite.SQLiteDatabase): Promise<number> {
+  await db.execAsync(SCHEMA_TABLE_SQL);
+  await db.execAsync(SCHEMA_SEED_SQL);
+  const row = await db.getFirstAsync<{ version: number }>(
+    'SELECT version FROM schema_migrations WHERE id = 1'
+  );
+  return row?.version ?? 0;
+}
+
 async function migrate(db: SQLite.SQLiteDatabase, migrations: string[][]): Promise<void> {
-  const row = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
-  const current = row?.user_version ?? 0;
+  const current = await getSchemaVersion(db);
   for (let v = current; v < migrations.length; v++) {
     if (Platform.OS === 'web') {
       // expo-sqlite web (wa-sqlite) does not support transactions.
@@ -52,11 +68,30 @@ async function migrate(db: SQLite.SQLiteDatabase, migrations: string[][]): Promi
         }
       });
     }
-    await db.execAsync(`PRAGMA user_version = ${v + 1};`);
+    await db.runAsync('UPDATE schema_migrations SET version = ? WHERE id = 1', v + 1);
   }
 }
 
 async function openDatabase(name: string, migrations: string[][]): Promise<SQLite.SQLiteDatabase> {
+  try {
+    return await openAndMigrate(name, migrations);
+  } catch (error) {
+    console.warn(`[db] first open of ${name} failed:`, error);
+    // SQLITE_NOTADB (code 26) means the persisted file is corrupt or stale
+    // (common on web/OPFS after interrupted migrations). Reset and retry once.
+    const isNotADatabase = error instanceof Error && /code 26|not a database/i.test(error.message);
+    if (!isNotADatabase) throw error;
+    try {
+      await SQLite.deleteDatabaseAsync(name);
+      console.warn(`[db] deleted corrupt ${name}, retrying...`);
+    } catch (deleteError) {
+      console.warn(`[db] delete of ${name} failed:`, deleteError);
+    }
+    return openAndMigrate(name, migrations);
+  }
+}
+
+async function openAndMigrate(name: string, migrations: string[][]): Promise<SQLite.SQLiteDatabase> {
   const db = await SQLite.openDatabaseAsync(name);
   try {
     await db.execAsync('PRAGMA journal_mode = WAL;');

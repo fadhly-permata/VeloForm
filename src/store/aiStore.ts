@@ -48,7 +48,27 @@ export const useAiStore = create<AiState>()((set, get) => ({
 
   loadProviders: async () => {
     try {
-      const providers = await getAiProviders();
+      let providers = await getAiProviders();
+
+      // Dev/testing convenience: when an OpenRouter key is provided via the
+      // EXPO_PUBLIC_OPENROUTER_API_KEY env var and no provider exists yet,
+      // seed a ready-to-test provider so connectivity testing works out of
+      // the box. The key is copied into secure storage like any other key.
+      const envKey = process.env.EXPO_PUBLIC_OPENROUTER_API_KEY;
+      if (providers.length === 0 && envKey && envKey.trim().length > 0) {
+        const seeded: AiProvider = {
+          id: 'env-openrouter',
+          type: 'openrouter',
+          name: 'OpenRouter (Testing)',
+          baseUrl: 'https://openrouter.ai/api/v1',
+          model: '',
+          isActive: true,
+        };
+        await upsertAiProvider(seeded);
+        await saveSecret(secretKeyFor(seeded.id), envKey.trim());
+        providers = await getAiProviders();
+      }
+
       set({ providers, loaded: true });
     } catch (error) {
       console.warn('Failed to load AI providers:', error);
