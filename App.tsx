@@ -5,6 +5,7 @@ import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AdminShell from './src/components/admin/AdminShell';
 import AuthScreen from './src/screens/AuthScreen';
+import RegistrationScreen from './src/screens/RegistrationScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import { useAppTheme } from './src/theme';
 import { useSettingsStore } from './src/store/settingsStore';
@@ -55,6 +56,9 @@ export default function App() {
     );
   } else if (!session) {
     content = <AuthScreen />;
+  } else if (profile && !profile.onboarded) {
+    // R-037: user baru melengkapi pendaftaran (autofill Google) sebelum masuk.
+    content = <RegistrationScreen />;
   } else if (!profile?.business_id) {
     content = <OnboardingScreen />;
   } else {

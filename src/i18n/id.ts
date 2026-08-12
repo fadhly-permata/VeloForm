@@ -59,6 +59,16 @@ export const id: Messages = {
   'onboard.join': 'Gabung',
   'onboard.switchAccount': 'Ganti akun / Keluar',
 
+  // --- Registrasi (R-037) ---
+  'reg.title': 'Lengkapi profil kamu',
+  'reg.subtitle': 'Selamat datang! Silakan lengkapi data pendaftaran. Data yang sudah tersedia dari akun Google diisi otomatis.',
+  'reg.fromGoogle': 'dari Google',
+  'reg.fullName': 'Nama lengkap',
+  'reg.email': 'Email',
+  'reg.phone': 'No. HP (opsional)',
+  'reg.position': 'Jabatan / posisi (opsional)',
+  'reg.submit': 'Simpan & Lanjut',
+
   // --- Dashboard ---
   'dash.subtitle': 'Ringkasan status aplikasi dan akses cepat ke modul VeloForm',
   'dash.quickStart': 'Mulai Cepat',

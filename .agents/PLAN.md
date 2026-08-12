@@ -70,7 +70,7 @@ Fase 1 dan 2 bisa dikerjakan paralel; Fase 3 butuh Fase 2; Fase 4 butuh Fase 3.
 | R-025 | WP-20 | **Report generator** — ringkasan laporan dari data transaksi (total, per-form, terbaru) | Rendah | ✅ |
 | R-035 | — | **Hapus total akses SQLite** — preferensi, AI provider, dan task queue pindah ke Supabase `usage`; `expo-sqlite` & `src/db/db.ts` dihapus | Tinggi | ✅ |
 | R-036 | — | **Rename skema DB** — `usage` → `logic`, `business` → `bussiness` → **`business`** (typo dikoreksi R-038; final: `logic` & `business`) | Tinggi | ✅ |
-| R-037 | — | **Form pendaftaran user baru** (autofill data Google: nama/email/avatar) — **dicatat dulu, belum dieksekusi** | Tinggi | 🔲 Baru |
+| R-037 | — | **Form pendaftaran user baru** (autofill data Google: nama/email/avatar) — `RegistrationScreen` + kolom `phone`/`position`/`onboarded` di `logic.profiles` + aksi `completeProfile` | Tinggi | ✅ |
 
 ---
 

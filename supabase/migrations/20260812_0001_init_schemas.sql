@@ -28,6 +28,10 @@ create table logic.profiles (
   email         text,
   full_name     text,
   avatar_url    text,
+  phone         text,
+  position      text,
+  -- R-037: user baru harus menyelesaikan form pendaftaran sebelum masuk.
+  onboarded     boolean not null default false,
   role          text not null default 'operator'
                 check (role in ('admin', 'operator', 'viewer')),
   business_id   uuid,

@@ -3,7 +3,8 @@
 **Product Name:** VeloForm
 **Target Platforms:** Cross-Platform (Web, Android, iOS)
 **Core Stack:** React Native / Expo (SDK 51+), TypeScript, Supabase (Postgres), Zustand, React Native Paper
-**Document Version:** 2.2.1
+**Document Version:** 2.3.0
+**Change Summary (v2.2.1 → v2.3.0, R-037):** **Form pendaftaran user baru** dieksekusi — user baru setelah login Google langsung melihat halaman pendaftaran (nama, email, avatar **di-autofill dari Google**; tambahan: no. HP & jabatan opsional) sebelum memilih usaha. Kolom `phone`, `position`, `onboarded` ditambahkan di `logic.profiles` + aksi `completeProfile` + layar `RegistrationScreen` (i18n EN/ID).
 **Change Summary (v1.2.0 → v2.0.0):** Backend SQLite → **Supabase** (2 skema), **Google Auth** saja (email login dihapus), **role-based access** (admin/operator/viewer), **multi-tenant per nama usaha**, **tema admin (AdminLTE)**, dan **multi-language (English US & Bahasa Indonesia)**.
 **Change Summary (v2.0.0 → v2.1.0, R-035):** **SQLite dihapus total** — preferensi (`user_preferences`), AI provider (`ai_providers`), dan task queue (`task_queue`) kini juga di Supabase schema `logic`; `expo-sqlite` tidak lagi dipakai.
 **Change Summary (v2.1.0 → v2.2.0, R-036):** **Rename nama skema** sesuai permintaan user — `usage` → **`logic`** (data penggunaan aplikasi) & `business` → **`bussiness`** (data bisnis) di seluruh migrasi, kode, dan dokumen. R-037 (form pendaftaran user baru) **dicatat, belum dieksekusi**.
@@ -33,6 +34,7 @@
 ### 2.1 Authentication
 - **Login Google saja** via Supabase Auth (keputusan user: **tidak punya domain/SMTP sendiri**, sehingga login email/password & konfirmasi email **dihapus**).
 - Aplikasi berjalan **per-user login** — seluruh query dibatasi ke user yang sedang login (RLS).
+- **Registrasi user baru (R-037):** begitu user baru login, aplikasi langsung menampilkan halaman pendaftaran (`RegistrationScreen`) untuk mendata informasi pengguna — **nama, email, dan avatar di-autofill dari akun Google** (dari `user_metadata`), plus kolom **No. HP** dan **Jabatan** (opsional). Data tersimpan di `logic.profiles` dan flag `onboarded = true`; setelah itu baru lanjut ke onboarding pemilihan nama usaha.
 
 ### 2.2 User Roles
 | Role | Kemampuan |
@@ -45,7 +47,7 @@
 - User yang **membuat usaha baru otomatis menjadi admin** usaha itu (trigger `business.set_creator_admin`).
 
 ### 2.3 Multi-Tenancy per Nama Usaha (R-031)
-- User dikelompokkan berdasarkan **nama usaha/perusahaan** (flow onboarding setelah login Google: buat usaha baru → jadi admin, atau gabung usaha yang sudah ada).
+- User dikelompokkan berdasarkan **nama usaha/perusahaan** (flow: login Google → **form pendaftaran (R-037)** → onboarding: buat usaha baru → jadi admin, atau gabung usaha yang sudah ada).
 - Data bisnis (desain form, transaksi, laporan, workflow) **terisolasi per `business_id`** via RLS — user dari usaha A **tidak boleh** membuka desain form & data usaha B.
 - Preferensi & konfigurasi AI provider bersifat per-user.
 
@@ -78,7 +80,7 @@
 ### Module 4: Dynamic Runtime & Workflow Execution Engine
 - **Runtime form dinamis:** render form/layar dari skema yang di-generate.
 - **Trigger form callbacks:** eksekusi logika bisnis pada `ON_SUBMIT`, `ON_CHANGE`.
-- **Task queue + scheduler in-app** (Supabase `usage.task_queue`) untuk job terjadwal/antrean; background OS (`expo-background-fetch`) menyusul (butuh test device).
+- **Task queue + scheduler in-app** (Supabase `logic.task_queue`) untuk job terjadwal/antrean; background OS (`expo-background-fetch`) menyusul (butuh test device).
 - **Decision nodes & eksekusi workflow** + log eksekusi.
 
 ### Module 5: Data Bisnis & Laporan
@@ -103,7 +105,7 @@
 ### 4.1 Schema `logic` — Data penggunaan aplikasi
 | Tabel | Isi |
 |-------|-----|
-| `profiles` | Profil user: email, nama, avatar, **role**, **business_id/business_name** (tenant) |
+| `profiles` | Profil user: email, nama, avatar, no. HP, jabatan, flag **onboarded** (R-037), **role**, **business_id/business_name** (tenant) |
 | `user_preferences` | Preferensi per-user: `theme_mode`, `language`, dll. (dari SQLite, R-035) |
 | `ai_providers` | Konfigurasi AI provider per-user (dari SQLite, R-035; API key **tidak** disimpan di DB) |
 | `task_queue` | Task queue per-user (dari SQLite `app_data.db`, R-035) |
@@ -167,6 +169,6 @@
 | Fase 5 — Data Bisnis & Laporan | WP-19..WP-20 | ✅ |
 | Hapus SQLite — semua data ke Supabase | R-035 | ✅ |
 | Rename skema DB (`usage`→`logic`, `business`→`bussiness`→`business`) | R-036/R-038 | ✅ |
-| Form pendaftaran user baru (autofill Google) | R-037 | 🔲 Baru (dicatat, belum dieksekusi) |
+| Form pendaftaran user baru (autofill Google) | R-037 | ✅ |
 
 > Status terperinci per revisi: `.agents/revisions.md` & `.agents/PLAN.md`.

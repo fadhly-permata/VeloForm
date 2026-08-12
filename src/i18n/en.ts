@@ -60,6 +60,16 @@ export const en = {
   'onboard.join': 'Join',
   'onboard.switchAccount': 'Switch account / Sign out',
 
+  // --- Registration (R-037) ---
+  'reg.title': 'Complete your profile',
+  'reg.subtitle': 'Welcome! Please complete your registration information. Fields already available from your Google account are filled in automatically.',
+  'reg.fromGoogle': 'from Google',
+  'reg.fullName': 'Full name',
+  'reg.email': 'Email',
+  'reg.phone': 'Phone (optional)',
+  'reg.position': 'Position / job title (optional)',
+  'reg.submit': 'Save & Continue',
+
   // --- Dashboard ---
   'dash.subtitle': 'Application status summary and quick access to VeloForm modules',
   'dash.quickStart': 'Quick Start',

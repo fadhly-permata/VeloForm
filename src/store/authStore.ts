@@ -9,6 +9,10 @@ export interface Profile {
   email: string | null;
   full_name: string | null;
   avatar_url: string | null;
+  phone: string | null;
+  position: string | null;
+  /** R-037: true setelah user baru menyelesaikan form pendaftaran. */
+  onboarded: boolean;
   role: UserRole;
   business_id: string | null;
   business_name: string | null;
@@ -35,6 +39,8 @@ interface AuthState {
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  /** R-037: simpan data form pendaftaran user baru (autofill Google). */
+  completeProfile: (input: { full_name: string; phone: string; position: string }) => Promise<void>;
   loadBusinesses: () => Promise<void>;
   createBusiness: (name: string) => Promise<void>;
   joinBusiness: (business: Business) => Promise<void>;
@@ -110,7 +116,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, email, full_name, avatar_url, role, business_id, business_name, created_at')
+        .select('id, email, full_name, avatar_url, phone, position, onboarded, role, business_id, business_name, created_at')
         .eq('id', user.id)
         .maybeSingle();
 
@@ -130,7 +136,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
           .upsert(defaultProfileRow(user.id), { onConflict: 'id' });
         const { data: fresh, error: freshError } = await supabase
           .from('profiles')
-          .select('id, email, full_name, avatar_url, role, business_id, business_name, created_at')
+          .select('id, email, full_name, avatar_url, phone, position, onboarded, role, business_id, business_name, created_at')
           .eq('id', user.id)
           .maybeSingle();
         if (freshError) throw freshError;
@@ -177,6 +183,41 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     }
     // Trigger `business.set_creator_admin` di Supabase otomatis mempromosikan
     // pembuat jadi admin + mengisi business_id/business_name di profile.
+    await get().refreshProfile();
+  },
+
+  completeProfile: async ({ full_name, phone, position }) => {
+    const user = get().session?.user;
+    if (!user) return;
+    set({ error: null });
+    const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
+    const avatar =
+      typeof metadata.picture === 'string'
+        ? metadata.picture
+        : typeof metadata.avatar_url === 'string'
+          ? metadata.avatar_url
+          : null;
+    const trimmedName = full_name.trim();
+    if (!trimmedName) {
+      set({ error: 'Nama lengkap wajib diisi.' });
+      return;
+    }
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        email: user.email ?? null,
+        full_name: trimmedName,
+        avatar_url: avatar,
+        phone: phone.trim() || null,
+        position: position.trim() || null,
+        onboarded: true,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', user.id);
+    if (error) {
+      set({ error: error.message });
+      return;
+    }
     await get().refreshProfile();
   },
 
