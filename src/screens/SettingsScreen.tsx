@@ -3,12 +3,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useAppTheme } from '../theme';
 import { useAuthStore } from '../store/authStore';
+import { useI18n } from '../i18n';
 import ThemeSection from '../components/settings/ThemeSection';
+import LanguageSection from '../components/settings/LanguageSection';
 import AiProviderSection from '../components/settings/AiProviderSection';
 import AdminCard from '../components/admin/AdminCard';
 
 export default function SettingsScreen() {
   const { colors } = useAppTheme();
+  const { t } = useI18n();
   const role = useAuthStore((s) => s.profile?.role);
 
   const isAdmin = role === 'admin';
@@ -17,15 +20,15 @@ export default function SettingsScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
         <ThemeSection />
+        <LanguageSection />
         {isAdmin ? (
           <AiProviderSection />
         ) : (
-          <AdminCard title="AI Provider — Akses dibatasi">
+          <AdminCard title={t('settings.aiRestrictedTitle')}>
             <View style={styles.restricted}>
               <Ionicons name="lock-closed" size={20} color={colors.accent} />
               <Text style={[styles.restrictedText, { color: colors.textMuted }]}>
-                Hanya user dengan role <Text style={{ fontWeight: '700', color: colors.text }}>admin</Text>{' '}
-                yang dapat mengubah konfigurasi AI provider (perintah modifikasi aplikasi via AI).
+                {t('settings.aiRestrictedText', { role: 'admin' })}
               </Text>
             </View>
           </AdminCard>

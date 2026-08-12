@@ -5,10 +5,12 @@ import { Button, TextInput } from 'react-native-paper';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useAppTheme } from '../theme';
 import { useAuthStore, type Business } from '../store/authStore';
+import { useI18n } from '../i18n';
 
 /** R-031: kelompokkan user berdasarkan nama usaha sebelum masuk aplikasi. */
 export default function OnboardingScreen() {
   const { colors } = useAppTheme();
+  const { t } = useI18n();
   const businesses = useAuthStore((s) => s.businesses);
   const error = useAuthStore((s) => s.error);
   const dbUnavailable = useAuthStore((s) => s.dbUnavailable);
@@ -41,25 +43,19 @@ export default function OnboardingScreen() {
           <View style={[styles.iconBadge, { backgroundColor: colors.primaryContainer }]}>
             <Ionicons name="business" size={26} color={colors.primary} />
           </View>
-          <Text style={[styles.title, { color: colors.text }]}>Pilih Nama Usaha</Text>
-          <Text style={[styles.subtitle, { color: colors.textMuted }]}>
-            Data, desain form, dan laporan dikelompokkan per nama usaha. User dari usaha lain
-            tidak bisa melihat data usaha kamu.
-          </Text>
+          <Text style={[styles.title, { color: colors.text }]}>{t('onboard.title')}</Text>
+          <Text style={[styles.subtitle, { color: colors.textMuted }]}>{t('onboard.subtitle')}</Text>
 
           {dbUnavailable ? (
             <View style={[styles.notice, { backgroundColor: colors.accent, borderColor: colors.border }]}>
               <Ionicons name="warning" size={18} color="#ffffff" />
-              <Text style={styles.noticeText}>
-                Database Supabase belum disiapkan. Jalankan migrasi di supabase/migrations dan
-                expose schema usage & business.
-              </Text>
+              <Text style={styles.noticeText}>{t('onboard.dbUnavailable')}</Text>
             </View>
           ) : (
             <>
-              <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>Buat usaha baru</Text>
+              <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>{t('onboard.createNew')}</Text>
               <TextInput
-                label="Nama usaha / perusahaan"
+                label={t('onboard.businessNameLabel')}
                 value={name}
                 onChangeText={setName}
                 mode="outlined"
@@ -72,15 +68,15 @@ export default function OnboardingScreen() {
                 disabled={creating || !name.trim()}
                 style={styles.createBtn}
               >
-                Buat & jadikan admin
+                {t('onboard.createAndAdmin')}
               </Button>
 
               <Text style={[styles.sectionLabel, { color: colors.textMuted, marginTop: 20 }]}>
-                atau gabung usaha yang sudah ada
+                {t('onboard.orJoin')}
               </Text>
               {businesses.length === 0 ? (
                 <Text style={[styles.empty, { color: colors.textMuted }]}>
-                  Belum ada usaha terdaftar.
+                  {t('onboard.noBusinesses')}
                 </Text>
               ) : (
                 businesses.map((b: Business) => (
@@ -91,7 +87,7 @@ export default function OnboardingScreen() {
                   >
                     <Ionicons name="business-outline" size={18} color={colors.primary} />
                     <Text style={[styles.businessName, { color: colors.text }]}>{b.name}</Text>
-                    <Text style={[styles.joinText, { color: colors.primary }]}>Gabung</Text>
+                    <Text style={[styles.joinText, { color: colors.primary }]}>{t('onboard.join')}</Text>
                   </Pressable>
                 ))
               )}
@@ -102,7 +98,7 @@ export default function OnboardingScreen() {
 
           <Pressable onPress={() => void signOut()} hitSlop={8} style={styles.signOut}>
             <Ionicons name="log-out-outline" size={15} color={colors.textMuted} />
-            <Text style={[styles.signOutText, { color: colors.textMuted }]}>Ganti akun / Keluar</Text>
+            <Text style={[styles.signOutText, { color: colors.textMuted }]}>{t('onboard.switchAccount')}</Text>
           </Pressable>
         </View>
       </ScrollView>

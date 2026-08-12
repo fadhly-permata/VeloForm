@@ -3,6 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useAppTheme } from '../theme';
 import { useAiStore } from '../store/aiStore';
 import { useUiStore } from '../store/uiStore';
+import { useI18n } from '../i18n';
 
 /**
  * Shown on AI-dependent screens until at least one AI provider is configured
@@ -10,6 +11,7 @@ import { useUiStore } from '../store/uiStore';
  */
 export default function AiProviderWarning() {
   const { colors } = useAppTheme();
+  const { t } = useI18n();
   const providers = useAiStore((s) => s.providers);
   const loaded = useAiStore((s) => s.loaded);
   const setSection = useUiStore((s) => s.setSection);
@@ -24,12 +26,8 @@ export default function AiProviderWarning() {
     >
       <Ionicons name="warning" size={18} color={colors.onPrimary} />
       <View style={{ flex: 1 }}>
-        <Text style={[styles.title, { color: colors.onPrimary }]}>
-          AI provider belum dikonfigurasi
-        </Text>
-        <Text style={[styles.subtitle, { color: colors.onPrimary }]}>
-          Atur dulu di Settings supaya fitur generate & workflow bisa dipakai.
-        </Text>
+        <Text style={[styles.title, { color: colors.onPrimary }]}>{t('ai.warningTitle')}</Text>
+        <Text style={[styles.subtitle, { color: colors.onPrimary }]}>{t('ai.warningBody')}</Text>
       </View>
       <Ionicons name="chevron-forward" size={18} color={colors.onPrimary} />
     </Pressable>

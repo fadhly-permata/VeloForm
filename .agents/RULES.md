@@ -79,7 +79,27 @@ Struktur yang dipakai:
 
 ---
 
-## 6. Commit & Push ke GitHub
+## 6. Multi-Language (i18n) — Wajib untuk Semua Label/Teks (R-032)
+
+- **Setiap label/teks/UI string** yang dirender ke user di aplikasi **WAJIB** melalui
+  sistem terjemahan (`useI18n().t('kunci')`) — **dilarang hardcode** teks user-visible
+  langsung di komponen.
+- **File bahasa terpisah per bahasa**, disimpan di `src/i18n/`:
+  - `en.ts` — English (US)
+  - `id.ts` — Bahasa Indonesia
+  - `index.ts` — registry + hook `useI18n()`
+- **Daftar bahasa aktif** (sementara 2): `en` (English US) & `id` (Bahasa Indonesia).
+  Menambah bahasa baru = buat file bahasa baru di `src/i18n/` yang **mengcover SEMUA
+  kunci** (pastikan `tsc` lolos — tipe `Messages` dijamin dari dictionary `en`), lalu
+  daftarkan di `index.ts` dan tambahkan opsi di `LanguageSection` (Settings).
+- **Pemilihan bahasa** dilakukan user lewat **halaman Settings** (komponen
+  `LanguageSection`) dan tersimpan di `user_preferences` (key `language`).
+- Nilai dinamis (nama user, nama usaha, pesan error dari server/API, data) boleh
+  ditampilkan langsung — hanya teks statis aplikasi yang wajib via `t()`.
+
+---
+
+## 7. Commit & Push ke GitHub
 
 - **Setiap selesai melakukan perubahan** (terutama perubahan kode aplikasi,
   termasuk juga file kerja di `.agents/`), **WAJIB commit & push ke GitHub** —

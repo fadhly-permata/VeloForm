@@ -1,54 +1,165 @@
 # PRODUCT REQUIREMENT DOCUMENT (PRD)
 
-**Product Name:** VeloForm  
-**Target Platforms:** Cross-Platform (Web, Android, iOS)  
-**Core Stack:** React Native for Web / Expo, TypeScript, Dual SQLite Engine  
-**Document Version:** 1.2.0 (Added Theme Engine: Dark / Light / Auto System)  
+**Product Name:** VeloForm
+**Target Platforms:** Cross-Platform (Web, Android, iOS)
+**Core Stack:** React Native / Expo (SDK 51+), TypeScript, Supabase (Postgres), Zustand, React Native Paper
+**Document Version:** 2.0.0
+**Change Summary (v1.2.0 → v2.0.0):** Backend SQLite → **Supabase** (2 skema), **Google Auth** saja (email login dihapus), **role-based access** (admin/operator/viewer), **multi-tenant per nama usaha**, **tema admin (AdminLTE)**, dan **multi-language (English US & Bahasa Indonesia)**.
 
 ---
 
 ## 1. Executive Summary & Product Vision
 
 ### 1.1 Vision
-**VeloForm** adalah platform *AI-Driven Dynamic UI, Form Generator, & Workflow Engine* cross-platform yang memungkinkan pengguna membuat, menguji, dan merilis halaman **Master**, **Transaksi**, **Laporan (Report)**, serta **Custom Decision Workflow** secara instan dengan antarmuka adaptif (**Light, Dark, & System Auto Theme**).
+**VeloForm** adalah platform *AI-Driven Dynamic UI, Form Generator, & Workflow Engine* cross-platform yang memungkinkan pengguna membuat, menguji, dan merilis halaman **Master**, **Transaksi**, **Laporan (Report)**, serta **Custom Decision Workflow** secara instan. Aplikasi berjalan sebagai **panel admin** (gaya AdminLTE), **cloud-first via Supabase**, terisolasi **per nama usaha (multi-tenant)**, dan mendukung **multi-language**.
 
 ### 1.2 Core Value Proposition
-* **Velocity (Kecepatan):** Mengubah instruksi teks menjadi antarmuka fungsional dan logika bisnis otomatis dalam hitungan detik.
-* **Iterative Refinement Studio:** Live preview interaktif bersisian dengan percakapan AI (*chat refinement*) untuk penyempurnaan UI dan skema workflow.
-* **Adaptive Theme Engine:** Dukungan pergantian tema visual secara presisi (Light Mode, Dark Mode, dan Auto/System Following).
-* **Event-Driven Workflow Engine:** Eksekusi otomatis logika bisnis berbasis trigger (Form Submit, Field Change, Cron Scheduler, atau Local Task Queue).
-* **Multi-Provider AI Agnostic:** Fleksibel dikonfigurasi ke berbagai penyedia model LLM (OpenRouter, HuggingFace, OpenAI, dll.).
-* **Local-First & Isolated Data Persistence:** Pemisahan tegas antara *system metadata* dan *business data* menggunakan **dua database SQLite terpisah**.
+- **Velocity (Kecepatan):** Mengubah instruksi teks menjadi antarmuka fungsional dan logika bisnis otomatis dalam hitungan detik.
+- **Iterative Refinement Studio:** Live preview interaktif bersisian dengan percakapan AI (*chat refinement*) untuk penyempurnaan UI dan skema workflow.
+- **Admin-Style UI (AdminLTE):** Tampilan aplikasi mengikuti pola umum aplikasi admin — sidebar gelap, dashboard statistik, kartu/kotak konten, header halaman.
+- **Adaptive Theme Engine:** Dukungan pergantian tema visual (Light, Dark, dan Auto/System).
+- **Multi-Language (i18n):** Semua label/teks aplikasi melalui sistem terjemahan; bahasa dipilih user di halaman Settings (sementara: **English (US)** & **Bahasa Indonesia**).
+- **Event-Driven Workflow Engine:** Eksekusi otomatis logika bisnis berbasis trigger (Form Submit, Field Change, Cron Scheduler, atau Local Task Queue).
+- **Multi-Provider AI Agnostic:** Fleksibel dikonfigurasi ke berbagai penyedia model LLM (OpenRouter, HuggingFace, OpenAI, Ollama, LiteLLM).
+- **Cloud-First & Multi-Tenant:** Database Supabase (Postgres) dengan **2 skema terpisah**; data diisolasi **per nama usaha** via Row Level Security (RLS) — user usaha A tidak bisa melihat data usaha B.
 
 ---
 
-## 2. Detailed Product Features & Modules
+## 2. Authentication, Roles & Multi-Tenancy (Module 6)
 
-### Module 1: System Settings & Theme Engine (NEW)
-* **Theme Mode Switcher:** User dapat memilih salah satu dari 3 opsi tema:
-  1. **Light Theme:** Kontras tinggi untuk penggunaan siang hari / ruangan terang.
-  2. **Dark Theme:** Mode gelap hemat daya dan nyaman untuk mata di kondisi redup.
-  3. **Auto / System Default:** Mengikuti konfigurasi preferensi OS bawaan perangkat (Android, iOS, atau Browser).
-* **Dynamic Palette Propagation:** Seluruh komponen antarmuka (termasuk komponen UI dinamis hasil *generate* AI) secara otomatis mengonsumsi variabel token warna dari Theme Provider.
-* **Theme Persistence:** Pilihan mode tema disimpan secara permanen di tabel `user_preferences` pada `system_metadata.db`.
+### 2.1 Authentication
+- **Login Google saja** via Supabase Auth (keputusan user: **tidak punya domain/SMTP sendiri**, sehingga login email/password & konfirmasi email **dihapus**).
+- Aplikasi berjalan **per-user login** — seluruh query dibatasi ke user yang sedang login (RLS).
+
+### 2.2 User Roles
+| Role | Kemampuan |
+|------|-----------|
+| `admin` | Membuat usaha, mengelola AI provider (**perintah modifikasi aplikasi via AI hanya untuk admin**), mengelola role user |
+| `operator` | Memakai aplikasi (isi form, lihat data usaha sendiri) |
+| `viewer` | Hanya melihat |
+
+- Default role user baru: `operator`.
+- User yang **membuat usaha baru otomatis menjadi admin** usaha itu (trigger `business.set_creator_admin`).
+
+### 2.3 Multi-Tenancy per Nama Usaha (R-031)
+- User dikelompokkan berdasarkan **nama usaha/perusahaan** (flow onboarding setelah login Google: buat usaha baru → jadi admin, atau gabung usaha yang sudah ada).
+- Data bisnis (desain form, transaksi, laporan, workflow) **terisolasi per `business_id`** via RLS — user dari usaha A **tidak boleh** membuka desain form & data usaha B.
+- Preferensi & konfigurasi AI provider bersifat per-user.
+
+---
+
+## 3. Detailed Product Features & Modules
+
+### Module 0: App Shell & Navigasi (AdminLTE-style)
+- **Sidebar gelap** (desktop selalu tampil; mobile jadi slide-in drawer) dengan navigasi: **Dashboard, Studio, Workflow, Reports, Settings**.
+- **Topbar** dengan judul halaman, switch tema cepat, badge nama usaha, avatar user, dan tombol logout.
+- Tema visual panel admin (AdminLTE): sidebar gelap, primary biru, body abu terang, kartu putih dengan border tipis.
+
+### Module 1: System Settings & Theme Engine
+- **Theme Mode Switcher:** Light / Dark / Auto (System).
+- **Dynamic Palette Propagation:** seluruh komponen (termasuk hasil generate AI) mengonsumsi token warna dari Theme Provider.
+- **Theme Persistence:** tersimpan di `user_preferences` (key `theme_mode`).
 
 ### Module 2: AI Provider Configurator
-*(Multi-Provider Support, API Key Encryption, Connectivity Tester)*
+- **Multi-provider:** OpenRouter, OpenAI, HuggingFace, Ollama (lokal), LiteLLM (proxy) — base URL + model per provider.
+- **Enkripsi API key:** kredensial disimpan aman di perangkat (expo-secure-store), tidak plaintext.
+- **Connectivity tester:** uji koneksi & validasi key ke provider terpilih.
+- **Gate role:** hanya **admin** yang boleh mengubah konfigurasi AI provider; user lain melihat kartu "akses dibatasi".
 
-### Module 3: VeloForm Generation Studio (UI, Theme-Aware Preview & Workflow Chat)
-* **Theme-Aware Live Preview:** Sandbox Live Preview merender komponen secara instan sesuai tema aktif yang sedang dipilih pengguna.
-* **Contextual Refinement:** Chat multi-turn untuk penyesuaian UI & logika workflow.
+### Module 3: VeloForm Generation Studio
+- **Studio dual-pane:** prompt input + live preview bersisian.
+- **AI chat refinement:** percakapan multi-turn untuk menyempurnakan UI & logika workflow.
+- **Generator skema:** hasil generate menjadi skema Master / Transaction / Report / Workflow, disimpan ke database.
+- **Theme-aware live preview:** render komponen dinamis mengikuti tema aktif.
 
 ### Module 4: Dynamic Runtime & Workflow Execution Engine
-*(Trigger Sources: Form Callbacks, Cron Scheduler, Local Task Queue, Decision Nodes)*
+- **Runtime form dinamis:** render form/layar dari skema yang di-generate.
+- **Trigger form callbacks:** eksekusi logika bisnis pada `ON_SUBMIT`, `ON_CHANGE`.
+- **Cron scheduler + local task queue** untuk job terjadwal/antrean.
+- **Decision nodes & eksekusi workflow** + catat queue logs.
+
+### Module 5: Data Bisnis & Laporan
+- **CRUD Master & Transaction** (data operasional bisnis).
+- **Report generator** — tampilkan/laporan dari data operasional (Master, Transactions, Reports).
+
+### Module 6: Auth, Roles & Multi-Tenancy
+- (Detail di §2.)
+
+### Module 7: Multi-Language (i18n) (R-032)
+- **Semua label/teks aplikasi wajib** melalui sistem terjemahan (`useI18n().t('kunci')`) — dilarang hardcode teks di komponen.
+- **File bahasa terpisah per bahasa** di `src/i18n/` (`en.ts` = English US, `id.ts` = Bahasa Indonesia; `index.ts` = registry + hook).
+- **Pemilihan bahasa** oleh user lewat halaman **Settings** (`LanguageSection`), tersimpan di `user_preferences` (key `language`).
+- Menambah bahasa baru: buat file bahasa baru yang mengcover semua kunci (dijamin oleh typecheck), daftarkan di registry, tambahkan opsi di Settings.
 
 ---
 
-## 3. Database Schema Update (`system_metadata.db`)
+## 4. Database Architecture — Supabase (Postgres)
 
-#### Table: `user_preferences` (NEW)
-| Column | Type | Constraints | Description |
-|---|---|---|---|
-| `key` | TEXT | PRIMARY KEY | Identifikasi pengaturan (contoh: `theme_mode`) |
-| `value` | TEXT | NOT NULL | Opsi pilihan: `light`, `dark`, `auto` |
-| `updated_at` | DATETIME | DEFAULT CURRENT_TIMESTAMP | Timestamp pembaruan |
+**Keputusan (R-028):** database utama berpindah dari SQLite lokal ke **Supabase** karena error inisialisasi SQLite web (expo-sqlite/wa-sqlite/OPFS) berulang. SQLite lokal hanya opsional sebagai offline cache.
+
+### 4.1 Schema `usage` — Data penggunaan aplikasi
+| Tabel | Isi |
+|-------|-----|
+| `profiles` | Profil user: email, nama, avatar, **role**, **business_id/business_name** (tenant) |
+| `user_preferences` | Preferensi per-user: `theme_mode`, `language`, dll. |
+| `ai_providers` | Konfigurasi AI provider per-user (API key **tidak** disimpan di DB) |
+| `app_events` | Telemetri / log penggunaan aplikasi |
+
+### 4.2 Schema `business` — Data bisnis (terisolasi per usaha)
+| Tabel | Isi |
+|-------|-----|
+| `businesses` | Daftar usaha/perusahaan (tenant) |
+| `form_masters` | Struktur form Master/Transaction/Report yang di-generate (`schema_json`) |
+| `form_transactions` | Data hasil submit form |
+| `reports` | Definisi laporan |
+| `workflows` | Definisi alur keputusan/otomasi |
+
+### 4.3 Keamanan
+- **Row Level Security (RLS) diaktifkan** di semua tabel.
+- Query dibatasi ke `auth.uid()` dan `business_id` user (isolasi tenant).
+- Migrasi: `supabase/migrations/20260812_0001_init_schemas.sql`.
+
+---
+
+## 5. Environment Variables & Setup
+
+| Env var | Keterangan | Status |
+|---------|-----------|--------|
+| `EXPO_PUBLIC_SUPABASE_URL` | URL project Supabase | ✅ tersedia |
+| `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Publishable key klien | ✅ tersedia |
+| `SUPABASE_SERVICE_ROLE_KEY` | Secret server-side (opsional, jangan di-bundle) | 🔶 belum |
+| Google OAuth Client ID/Secret | Di-set di dashboard Supabase (bukan di app) | ❌ belum |
+
+**Setup dashboard Supabase (sekali):** (1) jalankan migrasi; (2) expose schema `usage` & `business` (Settings → API → Exposed schemas); (3) aktifkan Google provider + Redirect URL aplikasi. Detail: `supabase/README.md`.
+
+---
+
+## 6. Tech Stack
+
+- **Core Framework:** React Native / Expo
+- **Languages:** TypeScript
+- **Theme & UI System:** React Native Paper + token palet custom (gaya AdminLTE)
+- **State Management:** Zustand
+- **Backend & Database:** Supabase (Postgres, 2 skema, RLS, Google Auth)
+- **Local Storage (opsional):** expo-sqlite / expo-secure-store (API keys)
+- **Background Tasks (fase 4):** expo-task-manager & expo-background-fetch
+
+---
+
+## 7. Roadmap & Status
+
+| Fase | Paket | Status |
+|------|-------|--------|
+| Fase 0 — Fondasi (shell, tema, dual SQLite, Zustand) | WP-01..WP-04 | ✅ |
+| Fase 1 — Settings & Theme Engine | WP-05..WP-07 | ✅ |
+| Fase 2 — AI Provider Configurator | WP-08..WP-10 | ✅ |
+| ⭐ Tema Admin (AdminLTE) | WP-21 (R-029) | ✅ |
+| ⭐ Auth Supabase (Google + roles) | WP-22 (R-030) | ✅ (kode) — butuh setup dashboard (K-006) |
+| ⭐ Multi-tenant per nama usaha | WP-23 (R-031) | ✅ (kode) — aktif setelah migrasi |
+| Migrasi Supabase (2 skema) | R-028 | 🔄 — menunggu migrasi dijalankan |
+| Multi-language (EN/ID) | R-032 | ✅ |
+| Fase 3 — Generation Studio | WP-11..WP-14 | 🔲 |
+| Fase 4 — Runtime & Workflow | WP-15..WP-18 | 🔲 |
+| Fase 5 — Data Bisnis & Laporan | WP-19..WP-20 | 🔲 |
+
+> Status terperinci per revisi: `.agents/revisions.md` & `.agents/PLAN.md`.

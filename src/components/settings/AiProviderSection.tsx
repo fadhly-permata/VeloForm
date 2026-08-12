@@ -14,6 +14,7 @@ import { useAppTheme } from '../../theme';
 import { useAiStore, type AiProvider, type AiProviderInput } from '../../store/aiStore';
 import { PROVIDER_TYPES, providerMeta } from '../../services/ai';
 import type { TestResult } from '../../services/ai';
+import { useI18n } from '../../i18n';
 
 interface FormState {
   id?: string;
@@ -50,6 +51,7 @@ function ProviderRow({
   testResult: TestResult | null;
 }) {
   const { colors } = useAppTheme();
+  const { t } = useI18n();
   const meta = providerMeta(provider.type);
 
   return (
@@ -60,24 +62,25 @@ function ProviderRow({
             {provider.name} {provider.isActive ? '★' : ''}
           </Text>
           <Text style={[styles.providerMeta, { color: colors.textMuted }]}>
-            {meta.label} · {provider.baseUrl}
-            {provider.model ? ` · model: ${provider.model}` : ''}
+            {provider.model
+              ? t('ai.providerMetaWithModel', { label: meta.label, baseUrl: provider.baseUrl, model: provider.model })
+              : t('ai.providerMeta', { label: meta.label, baseUrl: provider.baseUrl })}
           </Text>
         </View>
         {provider.isActive ? (
           <View style={[styles.badge, { backgroundColor: colors.primaryContainer }]}>
-            <Text style={[styles.badgeText, { color: colors.onPrimaryContainer }]}>Aktif</Text>
+            <Text style={[styles.badgeText, { color: colors.onPrimaryContainer }]}>{t('ai.active')}</Text>
           </View>
         ) : null}
       </View>
 
       <View style={styles.providerActions}>
         <Button mode="outlined" compact onPress={onTest} textColor={colors.text}>
-          Uji koneksi
+          {t('ai.testConnection')}
         </Button>
         {!provider.isActive ? (
           <Button mode="text" compact onPress={onActivate} textColor={colors.primary}>
-            Aktifkan
+            {t('ai.activate')}
           </Button>
         ) : null}
         <View style={{ flex: 1 }} />
@@ -100,6 +103,7 @@ function ProviderRow({
 
 export default function AiProviderSection() {
   const { colors } = useAppTheme();
+  const { t } = useI18n();
   const providers = useAiStore((s) => s.providers);
   const loaded = useAiStore((s) => s.loaded);
   const saveProvider = useAiStore((s) => s.saveProvider);
@@ -147,7 +151,7 @@ export default function AiProviderSection() {
   const handleSave = async () => {
     if (!form) return;
     if (!form.name.trim() || !form.baseUrl.trim()) {
-      setFormError('Nama dan Base URL wajib diisi.');
+      setFormError(t('ai.requiredFields'));
       return;
     }
     setSaving(true);
@@ -195,12 +199,9 @@ export default function AiProviderSection() {
       </View>
 
       {!loaded ? (
-        <Text style={{ color: colors.textMuted }}>Memuat…</Text>
+        <Text style={{ color: colors.textMuted }}>{t('common.loading')}</Text>
       ) : providers.length === 0 ? (
-        <Text style={{ color: colors.textMuted, marginTop: 4 }}>
-          Belum ada provider AI. Tambahkan minimal satu provider (OpenRouter, OpenAI, dll.) supaya
-          fitur generate bisa dipakai.
-        </Text>
+        <Text style={{ color: colors.textMuted, marginTop: 4 }}>{t('ai.empty')}</Text>
       ) : (
         providers.map((p) => (
           <ProviderRow
@@ -210,7 +211,7 @@ export default function AiProviderSection() {
             onDelete={() => handleDelete(p.id)}
             onActivate={() => void setActive(p.id)}
             onTest={() => void handleTest(p.id)}
-            testResult={testingId === p.id ? { ok: false, message: 'Menguji…' } : (testResults[p.id] ?? null)}
+            testResult={testingId === p.id ? { ok: false, message: t('ai.testing') } : (testResults[p.id] ?? null)}
           />
         ))
       )}
@@ -221,10 +222,10 @@ export default function AiProviderSection() {
         >
           <ScrollView style={{ marginTop: 12 }}>
             <Text style={[styles.formTitle, { color: colors.text }]}>
-              {form.id ? 'Edit Provider' : 'Tambah Provider'}
+              {form.id ? t('ai.editProvider') : t('ai.addProvider')}
             </Text>
 
-            <Text style={[styles.fieldLabel, { color: colors.textMuted }]}>Tipe Provider</Text>
+            <Text style={[styles.fieldLabel, { color: colors.textMuted }]}>{t('ai.providerType')}</Text>
             <View style={styles.typeRow}>
               {PROVIDER_TYPES.map((t) => {
                 const active = form.type === t.id;
@@ -252,14 +253,14 @@ export default function AiProviderSection() {
             </View>
 
             <TextInput
-              label="Nama"
+              label={t('ai.name')}
               value={form.name}
               onChangeText={(name) => setForm((f) => (f ? { ...f, name } : f))}
               mode="outlined"
               style={styles.input}
             />
             <TextInput
-              label="Base URL"
+              label={t('ai.baseUrl')}
               value={form.baseUrl}
               onChangeText={(baseUrl) => setForm((f) => (f ? { ...f, baseUrl } : f))}
               mode="outlined"
@@ -268,7 +269,7 @@ export default function AiProviderSection() {
               style={styles.input}
             />
             <TextInput
-              label="Model (opsional)"
+              label={t('ai.modelOptional')}
               value={form.model}
               onChangeText={(model) => setForm((f) => (f ? { ...f, model } : f))}
               mode="outlined"
@@ -277,7 +278,7 @@ export default function AiProviderSection() {
               style={styles.input}
             />
             <TextInput
-              label={form.id ? 'API Key (kosongkan jika tidak diubah)' : 'API Key'}
+              label={form.id ? t('ai.apiKeyEdit') : t('ai.apiKey')}
               value={form.apiKey}
               onChangeText={(apiKey) => setForm((f) => (f ? { ...f, apiKey } : f))}
               mode="outlined"
@@ -296,17 +297,17 @@ export default function AiProviderSection() {
                 onPress={() => setForm((f) => (f ? { ...f, isActive: !f.isActive } : f))}
                 color={colors.primary}
               />
-              <Text style={{ color: colors.text }}>Jadikan provider aktif</Text>
+              <Text style={{ color: colors.text }}>{t('ai.makeActive')}</Text>
             </Pressable>
 
             {formError ? <Text style={{ color: colors.error, marginTop: 8 }}>{formError}</Text> : null}
 
             <View style={styles.formActions}>
               <Button mode="contained" onPress={handleSave} loading={saving} disabled={saving}>
-                Simpan
+                {t('common.save')}
               </Button>
               <Button mode="text" onPress={() => setForm(null)} disabled={saving}>
-                Batal
+                {t('common.cancel')}
               </Button>
             </View>
           </ScrollView>

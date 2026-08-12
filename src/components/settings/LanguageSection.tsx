@@ -1,31 +1,20 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useAppTheme } from '../../theme';
-import { useSettingsStore, type ThemeMode } from '../../store/settingsStore';
-import { useI18n, type TranslationKey } from '../../i18n';
+import { LANGUAGE_OPTIONS, useI18n } from '../../i18n';
 
-const THEME_OPTIONS: { value: ThemeMode; labelKey: TranslationKey; hintKey: TranslationKey }[] = [
-  { value: 'light', labelKey: 'theme.light', hintKey: 'theme.lightHint' },
-  { value: 'dark', labelKey: 'theme.dark', hintKey: 'theme.darkHint' },
-  { value: 'auto', labelKey: 'theme.auto', hintKey: 'theme.autoHint' },
-];
-
-export default function ThemeSection() {
-  const themeMode = useSettingsStore((s) => s.themeMode);
-  const setThemeMode = useSettingsStore((s) => s.setThemeMode);
+/** R-032: language picker — separate translation files per language (en, id). */
+export default function LanguageSection() {
   const { colors } = useAppTheme();
-  const { t } = useI18n();
+  const { language, setLanguage, t } = useI18n();
 
   return (
     <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-      <Text style={[styles.cardTitle, { color: colors.text }]}>{t('theme.title')}</Text>
-      {THEME_OPTIONS.map((opt) => {
-        const active = themeMode === opt.value;
+      <Text style={[styles.cardTitle, { color: colors.text }]}>{t('language.title')}</Text>
+      <Text style={[styles.subtitle, { color: colors.textMuted }]}>{t('language.subtitle')}</Text>
+      {LANGUAGE_OPTIONS.map((opt) => {
+        const active = language === opt.value;
         return (
-          <Pressable
-            key={opt.value}
-            onPress={() => setThemeMode(opt.value)}
-            style={styles.row}
-          >
+          <Pressable key={opt.value} onPress={() => setLanguage(opt.value)} style={styles.row}>
             <View style={{ flex: 1 }}>
               <Text style={[styles.label, { color: colors.text }]}>{t(opt.labelKey)}</Text>
               <Text style={[styles.hint, { color: colors.textMuted }]}>{t(opt.hintKey)}</Text>
@@ -56,7 +45,11 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: '700',
-    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 12,
+    marginTop: 2,
+    marginBottom: 8,
   },
   row: {
     flexDirection: 'row',
@@ -78,7 +71,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
-  },  radioDot: {
+  },
+  radioDot: {
     width: 10,
     height: 10,
     borderRadius: 5,

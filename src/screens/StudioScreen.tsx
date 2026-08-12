@@ -3,9 +3,11 @@ import ScreenPlaceholder from '../components/ScreenPlaceholder';
 import AiProviderWarning from '../components/AiProviderWarning';
 import { useAppTheme } from '../theme';
 import { useAuthStore } from '../store/authStore';
+import { useI18n } from '../i18n';
 
 export default function StudioScreen() {
   const { colors } = useAppTheme();
+  const { t } = useI18n();
   const role = useAuthStore((s) => s.profile?.role);
   const isAdmin = role === 'admin';
 
@@ -14,13 +16,12 @@ export default function StudioScreen() {
       <AiProviderWarning />
       <ScreenPlaceholder
         icon="flash"
-        title="Generation Studio"
-        description="Generate Master Pages, Transactions, Reports & Decision Workflows dari prompt teks. Hadir di Fase 3."
+        title={t('studio.title')}
+        description={t('studio.description')}
       >
         {!isAdmin ? (
           <Text style={[styles.roleNote, { color: colors.textMuted }]}>
-            🔒 Hanya user dengan role <Text style={{ fontWeight: '700', color: colors.text }}>admin</Text> yang
-            dapat menggunakan perintah modifikasi aplikasi via AI provider.
+            {t('studio.roleNote', { role: 'admin' })}
           </Text>
         ) : null}
       </ScreenPlaceholder>

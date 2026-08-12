@@ -3,10 +3,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useAppTheme } from '../theme';
 import { useAuthStore } from '../store/authStore';
+import { useI18n } from '../i18n';
 
 /** R-030: login Google saja (login email dihapus — user tidak punya domain/SMTP). */
 export default function AuthScreen() {
   const { colors } = useAppTheme();
+  const { t } = useI18n();
   const status = useAuthStore((s) => s.status);
   const configured = useAuthStore((s) => s.configured);
   const dbUnavailable = useAuthStore((s) => s.dbUnavailable);
@@ -23,28 +25,20 @@ export default function AuthScreen() {
             <Ionicons name="speedometer" size={26} color="#ffffff" />
           </View>
           <Text style={[styles.brand, { color: colors.text }]}>VeloForm</Text>
-          <Text style={[styles.title, { color: colors.text }]}>Masuk ke aplikasi</Text>
-          <Text style={[styles.subtitle, { color: colors.textMuted }]}>
-            Login menggunakan akun Google. (Login email tidak tersedia.)
-          </Text>
+          <Text style={[styles.title, { color: colors.text }]}>{t('auth.title')}</Text>
+          <Text style={[styles.subtitle, { color: colors.textMuted }]}>{t('auth.subtitle')}</Text>
 
           {!configured ? (
             <View style={[styles.notice, { backgroundColor: colors.error, borderColor: colors.border }]}>
               <Ionicons name="alert-circle" size={18} color="#ffffff" />
-              <Text style={styles.noticeText}>
-                Konfigurasi Supabase belum lengkap. Tambahkan EXPO_PUBLIC_SUPABASE_URL dan
-                EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY di Keys/API keys.
-              </Text>
+              <Text style={styles.noticeText}>{t('auth.notConfigured')}</Text>
             </View>
           ) : (
             <>
               {dbUnavailable ? (
                 <View style={[styles.notice, { backgroundColor: colors.accent, borderColor: colors.border }]}>
                   <Ionicons name="warning" size={18} color="#ffffff" />
-                  <Text style={styles.noticeText}>
-                    Database Supabase belum disiapkan. Jalankan migrasi di supabase/migrations
-                    dan expose schema usage & business (Settings → API → Exposed schemas).
-                  </Text>
+                  <Text style={styles.noticeText}>{t('auth.dbUnavailable')}</Text>
                 </View>
               ) : null}
 
@@ -61,13 +55,12 @@ export default function AuthScreen() {
                 ) : (
                   <Ionicons name="logo-google" size={20} color="#4285F4" />
                 )}
-                <Text style={styles.googleBtnText}>Masuk dengan Google</Text>
+                <Text style={styles.googleBtnText}>{t('auth.signInWithGoogle')}</Text>
               </Pressable>
 
               {error ? (
                 <Text style={[styles.errorText, { color: colors.error }]}>
-                  Gagal login: {error} — pastikan provider Google aktif di dashboard Supabase
-                  (Authentication → Providers → Google).
+                  {t('auth.loginFailed', { error })}
                 </Text>
               ) : null}
             </>

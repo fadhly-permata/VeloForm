@@ -44,9 +44,21 @@ disimpan di folder `.agents/`.
 
 ---
 
+## Multi-Language (i18n)
+
+| Perintah | Aksi |
+|----------|------|
+| `tambah bahasa: <kode>` | Menambah file bahasa baru di `src/i18n/<kode>.ts` (mengcover semua kunci dari `en.ts`), mendaftarkannya di `src/i18n/index.ts`, dan menambah opsi di `LanguageSection` (Settings). |
+| `cek bahasa` / `cek i18n` | Memverifikasi semua file bahasa mengcover semua kunci (via `bun run typecheck` — tipe `Messages` diturunkan dari `en.ts`). |
+
+> **Aturan:** semua label/teks aplikasi wajib via `useI18n().t()` — lihat `.agents/RULES.md` §6.
+
+---
+
 ## Skill
 
 - **skill: revisi** — workflow revisi: catat → (tunggu perintah eksekusi) → kerjakan → tandai selesai → laporan.
 - **skill: laporan** — setiap proses kerja selalu ditutup dengan laporan di `.agents/reports/`.
 - **skill: kebutuhan** — setiap kebutuhan dicatat dulu di tracker sebelum eksekusi bagian yang bergantung padanya.
 - **skill: delivery** — setiap selesai perubahan, commit & push ke GitHub dengan akun user sendiri.
+- **skill: i18n** — semua label/teks aplikasi wajib lewat sistem terjemahan (`src/i18n/`), bahasa dipilih di Settings, file bahasa per bahasa (`en`, `id`).

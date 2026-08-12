@@ -5,19 +5,18 @@ import { ComponentProps } from 'react';
 import { useAppTheme } from '../theme';
 import { useUiStore, type SectionId } from '../store/uiStore';
 import { useAiStore } from '../store/aiStore';
-import { useSettingsStore, type ThemeMode } from '../store/settingsStore';
+import { useSettingsStore } from '../store/settingsStore';
 import { useAuthStore } from '../store/authStore';
+import { THEME_LABEL_KEYS, useI18n, type TranslationKey } from '../i18n';
 import StatCard from '../components/admin/StatCard';
 import AdminCard from '../components/admin/AdminCard';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
-const MODE_LABEL: Record<ThemeMode, string> = { light: 'Light', dark: 'Dark', auto: 'Auto' };
-
 interface QuickLink {
   section: SectionId;
-  label: string;
-  description: string;
+  labelKey: TranslationKey;
+  descriptionKey: TranslationKey;
   icon: IconName;
   color: string;
 }
@@ -25,29 +24,29 @@ interface QuickLink {
 const QUICK_LINKS: QuickLink[] = [
   {
     section: 'studio',
-    label: 'Buka Studio',
-    description: 'Generate Master, Transaction, Report & Workflow dari prompt teks.',
+    labelKey: 'dash.openStudio',
+    descriptionKey: 'dash.studioDesc',
     icon: 'flash',
     color: '#2563eb',
   },
   {
     section: 'workflow',
-    label: 'Buka Workflow',
-    description: 'Atur trigger form, cron scheduler, dan alur keputusan bisnis.',
+    labelKey: 'dash.openWorkflow',
+    descriptionKey: 'dash.workflowDesc',
     icon: 'git-network',
     color: '#16a34a',
   },
   {
     section: 'reports',
-    label: 'Buka Reports',
-    description: 'Lihat Master, Transactions, dan laporan data operasional.',
+    labelKey: 'dash.openReports',
+    descriptionKey: 'dash.reportsDesc',
     icon: 'document-text',
     color: '#f59e0b',
   },
   {
     section: 'settings',
-    label: 'Buka Settings',
-    description: 'Kelola tema aplikasi dan konfigurasi AI provider.',
+    labelKey: 'dash.openSettings',
+    descriptionKey: 'dash.settingsDesc',
     icon: 'settings',
     color: '#0d9488',
   },
@@ -56,6 +55,7 @@ const QUICK_LINKS: QuickLink[] = [
 /** R-029: AdminLTE-style dashboard (content header + small-box stats + boxes). */
 export default function DashboardScreen() {
   const { colors } = useAppTheme();
+  const { t } = useI18n();
   const providers = useAiStore((s) => s.providers);
   const providersLoaded = useAiStore((s) => s.loaded);
   const themeMode = useSettingsStore((s) => s.themeMode);
@@ -69,48 +69,46 @@ export default function DashboardScreen() {
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
       {/* Content header (AdminLTE) */}
       <View style={styles.pageHeader}>
-        <Text style={[styles.pageTitle, { color: colors.text }]}>Dashboard</Text>
-        <Text style={[styles.pageSubtitle, { color: colors.textMuted }]}>
-          Ringkasan status aplikasi dan akses cepat ke modul VeloForm
-        </Text>
+        <Text style={[styles.pageTitle, { color: colors.text }]}>{t('nav.dashboard')}</Text>
+        <Text style={[styles.pageSubtitle, { color: colors.textMuted }]}>{t('dash.subtitle')}</Text>
       </View>
 
       {/* Small-box stats */}
       <View style={styles.statRow}>
         <View style={styles.statItem}>
           <StatCard
-            label="AI Provider Aktif"
-            value={providersLoaded ? activeProviders : '—'}
+            label={t('dash.statAiActive')}
+            value={providersLoaded ? t('dash.activeProviders', { count: activeProviders }) : '—'}
             icon="flash"
             color="#2563eb"
-            note="Kelola di Settings"
+            note={t('dash.noteManageSettings')}
           />
         </View>
         <View style={styles.statItem}>
           <StatCard
-            label="Skema Form"
+            label={t('dash.statSchemas')}
             value={0}
             icon="grid"
             color="#0d9488"
-            note="Fase 3 — Studio generate"
+            note={t('dash.noteStudioPhase')}
           />
         </View>
         <View style={styles.statItem}>
           <StatCard
-            label="Workflow"
+            label={t('nav.workflow')}
             value={0}
             icon="git-network"
             color="#16a34a"
-            note="Fase 4 — Runtime & workflow"
+            note={t('dash.noteWorkflowPhase')}
           />
         </View>
         <View style={styles.statItem}>
           <StatCard
-            label="Laporan"
+            label={t('dash.statReports')}
             value={0}
             icon="document-text"
             color="#f59e0b"
-            note="Fase 5 — Data bisnis"
+            note={t('dash.noteReportsPhase')}
           />
         </View>
       </View>
@@ -118,7 +116,7 @@ export default function DashboardScreen() {
       {/* Two-column boxes */}
       <View style={styles.cardsRow}>
         <View style={styles.cardCol}>
-          <AdminCard title="Mulai Cepat">
+          <AdminCard title={t('dash.quickStart')}>
             {QUICK_LINKS.map((link) => (
               <Pressable
                 key={link.section}
@@ -129,8 +127,10 @@ export default function DashboardScreen() {
                   <Ionicons name={link.icon} size={18} color={link.color} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.quickLabel, { color: colors.text }]}>{link.label}</Text>
-                  <Text style={[styles.quickDesc, { color: colors.textMuted }]}>{link.description}</Text>
+                  <Text style={[styles.quickLabel, { color: colors.text }]}>{t(link.labelKey)}</Text>
+                  <Text style={[styles.quickDesc, { color: colors.textMuted }]}>
+                    {t(link.descriptionKey)}
+                  </Text>
                 </View>
                 <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
               </Pressable>
@@ -138,45 +138,45 @@ export default function DashboardScreen() {
           </AdminCard>
         </View>
         <View style={styles.cardCol}>
-          <AdminCard title="Status Aplikasi">
+          <AdminCard title={t('dash.appStatus')}>
             <StatusRow
-              label="Versi"
+              labelKey="dash.statusVersion"
               value="0.1.0"
               icon="cube-outline"
               color={colors.textMuted}
             />
             <StatusRow
-              label="Tema"
-              value={MODE_LABEL[themeMode]}
+              labelKey="dash.statusTheme"
+              value={t(THEME_LABEL_KEYS[themeMode])}
               icon="color-palette-outline"
               color={colors.primary}
             />
             <StatusRow
-              label="AI Provider"
-              value={providersLoaded ? `${activeProviders} aktif` : 'Memuat…'}
+              labelKey="dash.statusAiProvider"
+              value={providersLoaded ? t('dash.activeProviders', { count: activeProviders }) : t('common.loading')}
               icon="flash-outline"
               color={colors.accent}
             />
             <StatusRow
-              label="Database"
-              value="Supabase · 2 schema"
+              labelKey="dash.statusDatabase"
+              value={t('dash.databaseValue')}
               icon="server-outline"
               color={colors.textMuted}
             />
             <StatusRow
-              label="Login"
+              labelKey="dash.statusLogin"
               value={profile?.email ?? '—'}
               icon="log-in-outline"
               color={colors.textMuted}
             />
             <StatusRow
-              label="Usaha"
+              labelKey="dash.statusBusiness"
               value={profile?.business_name ?? '—'}
               icon="business-outline"
               color={colors.primary}
             />
             <StatusRow
-              label="Role"
+              labelKey="dash.statusRole"
               value={roleLabel}
               icon="shield-checkmark-outline"
               color={roleLabel === 'ADMIN' ? colors.success : colors.accent}
@@ -188,12 +188,23 @@ export default function DashboardScreen() {
   );
 }
 
-function StatusRow({ label, value, icon, color }: { label: string; value: string; icon: IconName; color: string }) {
+function StatusRow({
+  labelKey,
+  value,
+  icon,
+  color,
+}: {
+  labelKey: TranslationKey;
+  value: string;
+  icon: IconName;
+  color: string;
+}) {
   const { colors } = useAppTheme();
+  const { t } = useI18n();
   return (
     <View style={styles.statusRow}>
       <Ionicons name={icon} size={16} color={color} />
-      <Text style={[styles.statusLabel, { color: colors.textMuted }]}>{label}</Text>
+      <Text style={[styles.statusLabel, { color: colors.textMuted }]}>{t(labelKey)}</Text>
       <Text style={[styles.statusValue, { color: colors.text }]}>{value}</Text>
     </View>
   );

@@ -7,6 +7,7 @@ import { useAppTheme } from '../../theme';
 import { useUiStore, type SectionId } from '../../store/uiStore';
 import { useSettingsStore, type ThemeMode } from '../../store/settingsStore';
 import { useAuthStore } from '../../store/authStore';
+import { THEME_LABEL_KEYS, useI18n, type TranslationKey } from '../../i18n';
 import DashboardScreen from '../../screens/DashboardScreen';
 import StudioScreen from '../../screens/StudioScreen';
 import WorkflowScreen from '../../screens/WorkflowScreen';
@@ -20,20 +21,18 @@ const DESKTOP_MIN_WIDTH = 900;
 
 interface NavItem {
   id: SectionId;
-  label: string;
+  labelKey: TranslationKey;
   icon: IconName;
   iconActive: IconName;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'speedometer-outline', iconActive: 'speedometer' },
-  { id: 'studio', label: 'Studio', icon: 'flash-outline', iconActive: 'flash' },
-  { id: 'workflow', label: 'Workflow', icon: 'git-network-outline', iconActive: 'git-network' },
-  { id: 'reports', label: 'Reports', icon: 'document-text-outline', iconActive: 'document-text' },
-  { id: 'settings', label: 'Settings', icon: 'settings-outline', iconActive: 'settings' },
+  { id: 'dashboard', labelKey: 'nav.dashboard', icon: 'speedometer-outline', iconActive: 'speedometer' },
+  { id: 'studio', labelKey: 'nav.studio', icon: 'flash-outline', iconActive: 'flash' },
+  { id: 'workflow', labelKey: 'nav.workflow', icon: 'git-network-outline', iconActive: 'git-network' },
+  { id: 'reports', labelKey: 'nav.reports', icon: 'document-text-outline', iconActive: 'document-text' },
+  { id: 'settings', labelKey: 'nav.settings', icon: 'settings-outline', iconActive: 'settings' },
 ];
-
-const MODE_LABEL: Record<ThemeMode, string> = { light: 'Light', dark: 'Dark', auto: 'Auto' };
 
 function screenFor(id: SectionId) {
   switch (id) {
@@ -53,6 +52,7 @@ function screenFor(id: SectionId) {
 /** AdminLTE-style dark sidebar. `onNavigate` is used by the mobile drawer. */
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const { colors } = useAppTheme();
+  const { t } = useI18n();
   const section = useUiStore((s) => s.section);
   const setSection = useUiStore((s) => s.setSection);
 
@@ -92,7 +92,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                   active && styles.navLabelActive,
                 ]}
               >
-                {item.label}
+                {t(item.labelKey)}
               </Text>
               {active ? <View style={[styles.navDot, { backgroundColor: colors.sidebarAccent }]} /> : null}
             </Pressable>
@@ -129,6 +129,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
   const setThemeMode = useSettingsStore((s) => s.setThemeMode);
   const profile = useAuthStore((s) => s.profile);
   const signOut = useAuthStore((s) => s.signOut);
+  const { t } = useI18n();
   const isDesktop = width >= DESKTOP_MIN_WIDTH;
   const current = NAV_ITEMS.find((n) => n.id === section);
 
@@ -151,7 +152,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
           </Pressable>
         ) : null}
         <Text style={[styles.pageTitle, { color: colors.text }]} numberOfLines={1}>
-          {current?.label ?? 'VeloForm'}
+          {current ? t(current.labelKey) : 'VeloForm'}
         </Text>
         <View style={{ flex: 1 }} />
         <Pressable onPress={cycleTheme} hitSlop={8} style={[styles.themeChip, { borderColor: colors.border }]}>
@@ -160,7 +161,7 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
             size={14}
             color={colors.primary}
           />
-          <Text style={[styles.themeChipText, { color: colors.textMuted }]}>{MODE_LABEL[themeMode]}</Text>
+          <Text style={[styles.themeChipText, { color: colors.textMuted }]}>{t(THEME_LABEL_KEYS[themeMode])}</Text>
         </Pressable>
         {profile ? (
           <View style={styles.userArea}>

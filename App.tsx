@@ -26,6 +26,7 @@ export default function App() {
       await initDatabases().catch(() => {});
       if (cancelled) return;
       await useSettingsStore.getState().loadThemeMode();
+      await useSettingsStore.getState().loadLanguage();
       await useAiStore.getState().loadProviders();
       await useAuthStore.getState().init();
     };
