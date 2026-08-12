@@ -89,5 +89,8 @@ Struktur yang dipakai:
   - `user.email` = `8925077+fadhly-permata@users.noreply.github.com`
 - Jangan pernah commit dengan identitas orang lain / identitas generik.
   Jika identitas git tidak sesuai akun user, tanya user dulu sebelum commit.
+- **JANGAN menambahkan atribusi/co-author apa pun** ke pesan commit (misalnya
+  trailer `Co-Authored-By: ...`) — di panel kontributor GitHub hanya nama user
+  yang boleh muncul.
 - Hanya commit file yang relevan dengan pekerjaan yang sedang dikerjakan
   (jangan menyeret file di luar lingkup tanpa izin).
