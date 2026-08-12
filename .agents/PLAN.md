@@ -69,7 +69,7 @@ Fase 1 dan 2 bisa dikerjakan paralel; Fase 3 butuh Fase 2; Fase 4 butuh Fase 3.
 | R-024 | WP-19 | **CRUD Master & Transaction** — list + preview + isi form + hapus skema & transaksi (Supabase `business.*`) | Sedang | ✅ |
 | R-025 | WP-20 | **Report generator** — ringkasan laporan dari data transaksi (total, per-form, terbaru) | Rendah | ✅ |
 | R-035 | — | **Hapus total akses SQLite** — preferensi, AI provider, dan task queue pindah ke Supabase `usage`; `expo-sqlite` & `src/db/db.ts` dihapus | Tinggi | ✅ |
-| R-036 | — | **Rename skema DB** — `usage` → `logic`, `business` → `bussiness` (migrasi, kode, dokumen) | Tinggi | ✅ |
+| R-036 | — | **Rename skema DB** — `usage` → `logic`, `business` → `bussiness` → **`business`** (typo dikoreksi R-038; final: `logic` & `business`) | Tinggi | ✅ |
 | R-037 | — | **Form pendaftaran user baru** (autofill data Google: nama/email/avatar) — **dicatat dulu, belum dieksekusi** | Tinggi | 🔲 Baru |
 
 ---
@@ -95,7 +95,7 @@ Fase 1 dan 2 bisa dikerjakan paralel; Fase 3 butuh Fase 2; Fase 4 butuh Fase 3.
 
 | Area | Rencana |
 |------|---------|
-| **Skema `bussiness`** | Struktur form Master/Transaction + Report (data bisnis) — RLS per-user (R-036) |
+| **Skema `business`** | Struktur form Master/Transaction + Report (data bisnis) — RLS per-user (R-036/R-038) |
 | **Skema `logic`** | Data penggunaan aplikasi (preferensi user, konfigurasi AI provider, telemetri/usage) — RLS per-user (R-036) |
 | **Auth** | Google OAuth via Supabase Auth; seluruh query dibatasi ke user yang login (RLS) |
 | **Dep** | `@supabase/supabase-js` untuk semua data (bisnis + preferensi + AI provider + task queue); `expo-sqlite` **dihapus** (R-035) — API key tetap di secure storage |

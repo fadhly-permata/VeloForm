@@ -40,7 +40,7 @@ export const id: Messages = {
   'auth.notConfigured':
     'Konfigurasi Supabase belum lengkap. Tambahkan EXPO_PUBLIC_SUPABASE_URL dan EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY di Keys/API keys.',
   'auth.dbUnavailable':
-    'Database Supabase belum disiapkan. Jalankan migrasi di supabase/migrations dan expose schema logic & bussiness (Settings → API → Exposed schemas).',
+    'Database Supabase belum disiapkan. Jalankan migrasi di supabase/migrations dan expose schema logic & business (Settings → API → Exposed schemas).',
   'auth.signInWithGoogle': 'Masuk dengan Google',
   'auth.loginFailed':
     'Gagal login: {error} — pastikan provider Google aktif di dashboard Supabase (Authentication → Providers → Google).',
@@ -50,7 +50,7 @@ export const id: Messages = {
   'onboard.subtitle':
     'Data, desain form, dan laporan dikelompokkan per nama usaha. User dari usaha lain tidak bisa melihat data kamu.',
   'onboard.dbUnavailable':
-    'Database Supabase belum disiapkan. Jalankan migrasi di supabase/migrations dan expose schema logic & bussiness.',
+    'Database Supabase belum disiapkan. Jalankan migrasi di supabase/migrations dan expose schema logic & business.',
   'onboard.createNew': 'Buat usaha baru',
   'onboard.businessNameLabel': 'Nama usaha / perusahaan',
   'onboard.createAndAdmin': 'Buat & jadikan admin',

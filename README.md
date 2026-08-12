@@ -11,7 +11,7 @@
 * **🖥️ Interactive Live Studio:** Features a dual-pane workspace with a real-time UI preview and contextual AI chat refinement loop.
 * **☁️ Cloud-First Supabase Architecture (R-028/R-035/R-036):**
   * Schema `logic` — profiles, user preferences, AI provider configs, task queue, telemetry.
-  * Schema `bussiness` — form master schemas, transactions, reports, workflows (isolated per business via RLS).
+  * Schema `business` — form master schemas, transactions, reports, workflows (isolated per business via RLS).
   * AI provider **API keys** stay in device secure storage (never in the database).
 * **🔄 Event-Driven Workflow Engine:** Execute automated business logic triggered by form events (`ON_SUBMIT`, `ON_CHANGE`), background cron schedulers, or local task queues.
 * **📱 Cross-Platform Support:** Single codebase for Web (SPA/PWA), Android (APK/AAB), and iOS (IPA).

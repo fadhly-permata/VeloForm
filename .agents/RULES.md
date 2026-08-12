@@ -99,6 +99,18 @@ Struktur yang dipakai:
 
 ---
 
+## 7. Koreksi Typo User (R-038)
+
+- Setiap ketikan user yang bersifat **typo** (salah eja, salah ketik, salah
+  kapitalisasi, dsb.) **langsung dikoreksi** oleh asisten — **tanpa konfirmasi**
+  ke user.
+- Koreksi diterapkan ke kode/database/dokumen yang relevan (kalau typo sudah
+  terlanjur masuk), lalu dilaporkan di ringkasan proses.
+- Kalau maksud user ambigu (typo mengubah makna), koreksi ejaan tetap dilakukan
+  dan tanyakan hanya bagian yang benar-benar ambigu.
+
+---
+
 ## 8. PRD Harus Selalu Inline dengan Aplikasi
 
 - **Setiap melakukan revisi** (perubahan kode/database/fitur), file

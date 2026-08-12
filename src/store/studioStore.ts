@@ -148,13 +148,13 @@ export const useStudioStore = create<StudioState>()((set, get) => ({
     try {
       if (schema.kind === 'workflow') {
         const { error } = await supabase
-          .schema('bussiness')
+          .schema('business')
           .from('workflows')
           .insert({ business_id: businessId, name: schema.name, definition: schema });
         if (error) throw error;
       } else {
         const { error } = await supabase
-          .schema('bussiness')
+          .schema('business')
           .from('form_masters')
           .insert({
             business_id: businessId,

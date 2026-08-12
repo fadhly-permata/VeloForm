@@ -4,8 +4,8 @@ import type { FormValues } from './runtime';
 
 /**
  * Data access layer (Fase 5 — R-024/R-025).
- * Reads/writes `bussiness.form_masters`, `bussiness.form_transactions`, and
- * `bussiness.workflows` via Supabase. If the Supabase migration has not been
+ * Reads/writes `business.form_masters`, `business.form_transactions`, and
+ * `business.workflows` via Supabase. If the Supabase migration has not been
  * applied yet, calls throw — screens map that to a "database not ready"
  * notice.
  */
@@ -64,7 +64,7 @@ function parseSchemaJson(raw: unknown): GeneratedSchema | null {
 
 export async function listFormSchemas(): Promise<FormSchemaRecord[]> {
   const { data, error } = await supabase
-    .schema('bussiness')
+    .schema('business')
     .from('form_masters')
     .select('id, name, kind, schema_json, created_at')
     .order('created_at', { ascending: false });
@@ -86,13 +86,13 @@ export async function listFormSchemas(): Promise<FormSchemaRecord[]> {
 }
 
 export async function deleteFormSchema(id: string): Promise<void> {
-  const { error } = await supabase.schema('bussiness').from('form_masters').delete().eq('id', id);
+  const { error } = await supabase.schema('business').from('form_masters').delete().eq('id', id);
   if (error) throw error;
 }
 
 export async function listWorkflows(): Promise<WorkflowRecord[]> {
   const { data, error } = await supabase
-    .schema('bussiness')
+    .schema('business')
     .from('workflows')
     .select('id, name, definition, created_at')
     .order('created_at', { ascending: false });
@@ -106,13 +106,13 @@ export async function listWorkflows(): Promise<WorkflowRecord[]> {
 }
 
 export async function deleteWorkflow(id: string): Promise<void> {
-  const { error } = await supabase.schema('bussiness').from('workflows').delete().eq('id', id);
+  const { error } = await supabase.schema('business').from('workflows').delete().eq('id', id);
   if (error) throw error;
 }
 
 export async function listTransactions(): Promise<TransactionRecord[]> {
   const { data, error } = await supabase
-    .schema('bussiness')
+    .schema('business')
     .from('form_transactions')
     .select('id, form_id, data, created_at')
     .order('created_at', { ascending: false });
@@ -121,7 +121,7 @@ export async function listTransactions(): Promise<TransactionRecord[]> {
 
   // Resolve form names for display.
   const { data: forms } = await supabase
-    .schema('bussiness')
+    .schema('business')
     .from('form_masters')
     .select('id, name');
   const nameById = new Map<string, string>((forms ?? []).map((f) => [f.id, f.name]));
@@ -137,13 +137,13 @@ export async function listTransactions(): Promise<TransactionRecord[]> {
 
 export async function insertTransaction(formId: string, data: FormValues): Promise<void> {
   const { error } = await supabase
-    .schema('bussiness')
+    .schema('business')
     .from('form_transactions')
     .insert({ form_id: formId, data });
   if (error) throw error;
 }
 
 export async function deleteTransaction(id: string): Promise<void> {
-  const { error } = await supabase.schema('bussiness').from('form_transactions').delete().eq('id', id);
+  const { error } = await supabase.schema('business').from('form_transactions').delete().eq('id', id);
   if (error) throw error;
 }

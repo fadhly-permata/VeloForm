@@ -5,13 +5,13 @@ Backend & database VeloForm memakai **Supabase** (Postgres). Dua schema:
 | Schema | Isi | Contoh tabel |
 |--------|-----|--------------|
 | `logic`  | Data penggunaan aplikasi | `profiles` (user, role, tenant), `user_preferences`, `ai_providers`, `task_queue`, `app_events` |
-| `bussiness` | Data bisnis (terisolasi per usaha) | `businesses`, `form_masters`, `form_transactions`, `reports`, `workflows` |
+| `business` | Data bisnis (terisolasi per usaha) | `businesses`, `form_masters`, `form_transactions`, `reports`, `workflows` |
 
 > **R-035:** SQLite lokal sudah **dihapus** — preferensi, AI provider, dan task
 > queue kini juga di Supabase (`logic`). API key AI provider tetap disimpan di
 > secure storage perangkat (tidak di DB).
 > **R-036:** Nama skema diubah sesuai permintaan user — `usage` → `logic`,
-> `business` → `bussiness` (ejaan sesuai permintaan user).
+> `business` → `bussiness` → **dikoreksi kembali ke `business`** (R-038, typo user).
 
 ## Langkah Setup (sekali saja, di dashboard Supabase)
 
@@ -27,7 +27,7 @@ Backend & database VeloForm memakai **Supabase** (Postgres). Dua schema:
 
 ### 2. Expose schema ke API
 
-**Settings → API → Exposed schemas** → tambahkan `logic` dan `bussiness`.
+**Settings → API → Exposed schemas** → tambahkan `logic` dan `business`.
 (Tanpa ini, tabel tidak bisa diakses dari aplikasi.)
 
 ### 3. Aktifkan Google Auth (K-004)

@@ -147,7 +147,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   loadBusinesses: async () => {
     const { data, error } = await supabase
-      .schema('bussiness')
+      .schema('business')
       .from('businesses')
       .select('id, name')
       .order('name');
@@ -168,14 +168,14 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       return;
     }
     const { error } = await supabase
-      .schema('bussiness')
+      .schema('business')
       .from('businesses')
       .insert({ name: trimmed, created_by: user.id });
     if (error) {
       set({ error: error.message });
       return;
     }
-    // Trigger `bussiness.set_creator_admin` di Supabase otomatis mempromosikan
+    // Trigger `business.set_creator_admin` di Supabase otomatis mempromosikan
     // pembuat jadi admin + mengisi business_id/business_name di profile.
     await get().refreshProfile();
   },
