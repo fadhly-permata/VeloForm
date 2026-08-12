@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { ComponentProps } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useAppTheme } from '../../theme';
 import { useUiStore, type SectionId } from '../../store/uiStore';
 import { useSettingsStore, type ThemeMode } from '../../store/settingsStore';
+import { useAuthStore } from '../../store/authStore';
 import DashboardScreen from '../../screens/DashboardScreen';
 import StudioScreen from '../../screens/StudioScreen';
 import WorkflowScreen from '../../screens/WorkflowScreen';
@@ -126,6 +127,8 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
   const section = useUiStore((s) => s.section);
   const themeMode = useSettingsStore((s) => s.themeMode);
   const setThemeMode = useSettingsStore((s) => s.setThemeMode);
+  const profile = useAuthStore((s) => s.profile);
+  const signOut = useAuthStore((s) => s.signOut);
   const isDesktop = width >= DESKTOP_MIN_WIDTH;
   const current = NAV_ITEMS.find((n) => n.id === section);
 
@@ -133,6 +136,8 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
     const next: ThemeMode = themeMode === 'light' ? 'dark' : themeMode === 'dark' ? 'auto' : 'light';
     setThemeMode(next);
   };
+
+  const initials = (profile?.full_name ?? profile?.email ?? '?').charAt(0).toUpperCase();
 
   return (
     <SafeAreaView
@@ -157,6 +162,28 @@ function Topbar({ onMenu }: { onMenu: () => void }) {
           />
           <Text style={[styles.themeChipText, { color: colors.textMuted }]}>{MODE_LABEL[themeMode]}</Text>
         </Pressable>
+        {profile ? (
+          <View style={styles.userArea}>
+            {isDesktop && profile.business_name ? (
+              <View style={[styles.bizChip, { borderColor: colors.border }]}>
+                <Ionicons name="business" size={13} color={colors.primary} />
+                <Text style={[styles.bizChipText, { color: colors.textMuted }]} numberOfLines={1}>
+                  {profile.business_name}
+                </Text>
+              </View>
+            ) : null}
+            {profile.avatar_url ? (
+              <Image source={{ uri: profile.avatar_url }} style={styles.avatar} />
+            ) : (
+              <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
+                <Text style={styles.avatarText}>{initials}</Text>
+              </View>
+            )}
+            <Pressable onPress={() => void signOut()} hitSlop={8} style={styles.logoutBtn}>
+              <Ionicons name="log-out-outline" size={20} color={colors.textMuted} />
+            </Pressable>
+          </View>
+        ) : null}
       </View>
     </SafeAreaView>
   );
@@ -228,6 +255,41 @@ const styles = StyleSheet.create({
   themeChipText: {
     fontSize: 12,
     fontWeight: '600',
+  },
+  userArea: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginLeft: 12,
+  },
+  bizChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    maxWidth: 200,
+  },
+  bizChipText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  avatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  logoutBtn: {
+    padding: 4,
   },
   sidebar: {
     width: SIDEBAR_WIDTH,

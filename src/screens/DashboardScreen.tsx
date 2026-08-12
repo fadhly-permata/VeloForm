@@ -6,6 +6,7 @@ import { useAppTheme } from '../theme';
 import { useUiStore, type SectionId } from '../store/uiStore';
 import { useAiStore } from '../store/aiStore';
 import { useSettingsStore, type ThemeMode } from '../store/settingsStore';
+import { useAuthStore } from '../store/authStore';
 import StatCard from '../components/admin/StatCard';
 import AdminCard from '../components/admin/AdminCard';
 
@@ -59,8 +60,10 @@ export default function DashboardScreen() {
   const providersLoaded = useAiStore((s) => s.loaded);
   const themeMode = useSettingsStore((s) => s.themeMode);
   const setSection = useUiStore((s) => s.setSection);
+  const profile = useAuthStore((s) => s.profile);
 
   const activeProviders = providers.filter((p) => p.isActive).length;
+  const roleLabel = (profile?.role ?? '—').toUpperCase();
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
@@ -156,21 +159,27 @@ export default function DashboardScreen() {
             />
             <StatusRow
               label="Database"
-              value="SQLite lokal"
+              value="Supabase · 2 schema"
               icon="server-outline"
               color={colors.textMuted}
             />
             <StatusRow
               label="Login"
-              value="Google OAuth (R-030)"
+              value={profile?.email ?? '—'}
               icon="log-in-outline"
               color={colors.textMuted}
             />
             <StatusRow
-              label="Database cloud"
-              value="Supabase menyusul (R-028)"
-              icon="cloud-outline"
-              color={colors.textMuted}
+              label="Usaha"
+              value={profile?.business_name ?? '—'}
+              icon="business-outline"
+              color={colors.primary}
+            />
+            <StatusRow
+              label="Role"
+              value={roleLabel}
+              icon="shield-checkmark-outline"
+              color={roleLabel === 'ADMIN' ? colors.success : colors.accent}
             />
           </AdminCard>
         </View>
