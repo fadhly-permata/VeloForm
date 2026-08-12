@@ -23,10 +23,10 @@ Fase 1 dan 2 bisa dikerjakan paralel; Fase 3 butuh Fase 2; Fase 4 butuh Fase 3.
 
 | Revisi | Paket | Deskripsi | Prioritas | Status |
 |--------|-------|-----------|-----------|--------|
-| R-006 | WP-01 | **App shell & navigasi** — struktur layar utama: Studio, Workflow, Reports, Settings (+ bottom tabs / sidebar responsif) | Tinggi | 🔲 |
-| R-007 | WP-02 | **Sistem tema (Light/Dark/Auto)** — ThemeProvider + `useColorScheme`, palet token warna (variabel), siap dipakai semua layar | Tinggi | 🔲 |
-| R-008 | WP-03 | **Dual SQLite** — setup `expo-sqlite` dua koneksi: `system_metadata.db` & `app_data.db`, + mekanisme migrasi skema | Tinggi | 🔲 |
-| R-009 | WP-04 | **State management (Zustand)** — store global: pengaturan (settings), tema aktif, konfigurasi AI, data runtime | Sedang | 🔲 |
+| R-006 | WP-01 | **App shell & navigasi** — struktur layar utama: Studio, Workflow, Reports, Settings (+ bottom tabs / sidebar responsif) | Tinggi | ✅ |
+| R-007 | WP-02 | **Sistem tema (Light/Dark/Auto)** — ThemeProvider + `useColorScheme`, palet token warna (variabel), siap dipakai semua layar | Tinggi | ✅ |
+| R-008 | WP-03 | **Dual SQLite** — setup `expo-sqlite` dua koneksi: `system_metadata.db` & `app_data.db`, + mekanisme migrasi skema | Tinggi | ✅ |
+| R-009 | WP-04 | **State management (Zustand)** — store global: pengaturan (settings), tema aktif, konfigurasi AI, data runtime | Sedang | ✅ |
 
 ## Fase 1 — Module 1: System Settings & Theme Engine
 

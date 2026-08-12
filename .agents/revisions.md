@@ -20,10 +20,10 @@
 | R-003 | 2026-08-12 | Tambah aturan: selalu commit & push ke GitHub setiap selesai perubahan, dengan akun GitHub user sendiri | Tinggi | ✅ Selesai | Diminta langsung oleh user — laporan: `.agents/reports/120826_0950_add-commit-push-rule.md` |
 | R-004 | 2026-08-12 | Ganti format filename laporan menjadi `{ddmmyy}_{hhmm}_{task_name}.md` | Rendah | ✅ Selesai | Diminta langsung oleh user — laporan: `.agents/reports/120826_0953_change-report-filename-format.md` |
 | R-005 | 2026-08-12 | Hapus atribusi Codebuff (trailer Co-Authored-By) dari history git & force-push; tambah aturan dilarang atribusi selain user | Tinggi | ✅ Selesai | Diminta langsung oleh user — laporan: `.agents/reports/120826_0955_remove-codebuff-attribution.md` |
-| R-006 | 2026-08-12 | WP-01 App shell & navigasi (Studio, Workflow, Reports, Settings) — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
-| R-007 | 2026-08-12 | WP-02 Sistem tema Light/Dark/Auto + palet token — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
-| R-008 | 2026-08-12 | WP-03 Dual SQLite (`system_metadata.db` & `app_data.db`) + migrasi — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
-| R-009 | 2026-08-12 | WP-04 State management Zustand (store global) — lihat `.agents/PLAN.md` | Sedang | 🔲 Baru | Breakdown PRD |
+| R-006 | 2026-08-12 | WP-01 App shell & navigasi (Studio, Workflow, Reports, Settings) — lihat `.agents/PLAN.md` | Tinggi | ✅ Selesai | Fase 0 — laporan: `.agents/reports/120826_1010_fase0-foundation.md` |
+| R-007 | 2026-08-12 | WP-02 Sistem tema Light/Dark/Auto + palet token — lihat `.agents/PLAN.md` | Tinggi | ✅ Selesai | Fase 0 — laporan: `.agents/reports/120826_1010_fase0-foundation.md` |
+| R-008 | 2026-08-12 | WP-03 Dual SQLite (`system_metadata.db` & `app_data.db`) + migrasi — lihat `.agents/PLAN.md` | Tinggi | ✅ Selesai | Fase 0 — laporan: `.agents/reports/120826_1010_fase0-foundation.md` |
+| R-009 | 2026-08-12 | WP-04 State management Zustand (store global) — lihat `.agents/PLAN.md` | Sedang | ✅ Selesai | Fase 0 — laporan: `.agents/reports/120826_1010_fase0-foundation.md` |
 | R-010 | 2026-08-12 | WP-05 Halaman Settings + theme mode switcher — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
 | R-011 | 2026-08-12 | WP-06 Tabel `user_preferences` + persistensi tema — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
 | R-012 | 2026-08-12 | WP-07 Dynamic Palette Propagation — lihat `.agents/PLAN.md` | Sedang | 🔲 Baru | Breakdown PRD |
