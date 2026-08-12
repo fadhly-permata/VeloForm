@@ -48,10 +48,10 @@ Fase 1 dan 2 bisa dikerjakan paralel; Fase 3 butuh Fase 2; Fase 4 butuh Fase 3.
 
 | Revisi | Paket | Deskripsi | Prioritas | Status |
 |--------|-------|-----------|-----------|--------|
-| R-016 | WP-11 | **Studio dual-pane** — layout prompt input + live preview bersisian | Tinggi | 🔲 |
-| R-017 | WP-12 | **AI chat refinement** — percakapan multi-turn untuk menyempurnakan UI & logika workflow | Tinggi | 🔲 |
-| R-018 | WP-13 | **Generator skema** — hasil generate jadi skema Master / Transaction / Report / Workflow, disimpan ke `system_metadata.db` | Tinggi | 🔲 |
-| R-019 | WP-14 | **Theme-aware live preview** — render komponen dinamis mengikuti tema aktif (Light/Dark/Auto) | Sedang | 🔲 |
+| R-016 | WP-11 | **Studio dual-pane** — layout prompt input + live preview bersisian | Tinggi | ✅ |
+| R-017 | WP-12 | **AI chat refinement** — percakapan multi-turn untuk menyempurnakan UI & logika workflow | Tinggi | ✅ |
+| R-018 | WP-13 | **Generator skema** — hasil generate jadi skema Master / Transaction / Report / Workflow, disimpan ke `business.form_masters` / `business.workflows` (Supabase) | Tinggi | ✅ |
+| R-019 | WP-14 | **Theme-aware live preview** — render komponen dinamis mengikuti tema aktif (Light/Dark/Auto) | Sedang | ✅ |
 
 ## Fase 4 — Module 4: Dynamic Runtime & Workflow Execution Engine
 

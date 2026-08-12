@@ -30,10 +30,10 @@
 | R-013 | 2026-08-12 | WP-08 Konfigurasi multi-provider AI (OpenRouter/HuggingFace/OpenAI/Ollama/LiteLLM) — lihat `.agents/PLAN.md` | Tinggi | ✅ Selesai | Fase 2 — laporan: `.agents/reports/120826_1034_fase1-fase2-settings-ai.md` |
 | R-014 | 2026-08-12 | WP-09 Enkripsi API key — lihat `.agents/PLAN.md` | Tinggi | ✅ Selesai | Fase 2 — laporan: `.agents/reports/120826_1034_fase1-fase2-settings-ai.md` |
 | R-015 | 2026-08-12 | WP-10 Connectivity tester — lihat `.agents/PLAN.md` | Sedang | ✅ Selesai | Fase 2 — laporan: `.agents/reports/120826_1034_fase1-fase2-settings-ai.md` |
-| R-016 | 2026-08-12 | WP-11 Studio dual-pane (prompt + live preview) — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
-| R-017 | 2026-08-12 | WP-12 AI chat refinement loop — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
-| R-018 | 2026-08-12 | WP-13 Generator skema (Master/Transaction/Report/Workflow) — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
-| R-019 | 2026-08-12 | WP-14 Theme-aware live preview — lihat `.agents/PLAN.md` | Sedang | 🔲 Baru | Breakdown PRD |
+| R-016 | 2026-08-12 | WP-11 Studio dual-pane (prompt + live preview) — lihat `.agents/PLAN.md` | Tinggi | ✅ Selesai | Fase 3 — laporan: `.agents/reports/120826_1354_fase3-generation-studio.md` |
+| R-017 | 2026-08-12 | WP-12 AI chat refinement loop — lihat `.agents/PLAN.md` | Tinggi | ✅ Selesai | Fase 3 — laporan: `.agents/reports/120826_1354_fase3-generation-studio.md` |
+| R-018 | 2026-08-12 | WP-13 Generator skema (Master/Transaction/Report/Workflow) — lihat `.agents/PLAN.md` | Tinggi | ✅ Selesai | Fase 3 — tersimpan ke `business.form_masters`/`business.workflows` (Supabase) — laporan: `.agents/reports/120826_1354_fase3-generation-studio.md` |
+| R-019 | 2026-08-12 | WP-14 Theme-aware live preview — lihat `.agents/PLAN.md` | Sedang | ✅ Selesai | Fase 3 — laporan: `.agents/reports/120826_1354_fase3-generation-studio.md` |
 | R-020 | 2026-08-12 | WP-15 Runtime form dinamis — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
 | R-021 | 2026-08-12 | WP-16 Trigger form callbacks (ON_SUBMIT/ON_CHANGE) — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
 | R-022 | 2026-08-12 | WP-17 Cron scheduler + local task queue — lihat `.agents/PLAN.md` | Sedang | 🔲 Baru | Breakdown PRD |
