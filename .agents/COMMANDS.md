@@ -32,7 +32,7 @@ disimpan di folder `.agents/`.
 
 | Perintah | Aksi |
 |----------|------|
-| `buat laporan <nama_tugas>` | Menulis laporan `.agents/reports/{date}_{time}_{nama_tugas}.md`. Dilakukan otomatis di akhir setiap proses. |
+| `buat laporan <nama_tugas>` | Menulis laporan `.agents/reports/{ddmmyy}_{hhmm}_{nama_tugas}.md`. Dilakukan otomatis di akhir setiap proses. |
 
 ---
 

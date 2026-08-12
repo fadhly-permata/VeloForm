@@ -17,7 +17,7 @@ Struktur yang dipakai:
 ├── RULES.md              ← aturan main (file ini)
 ├── COMMANDS.md           ← daftar command / skill yang tersedia
 ├── revisions.md          ← tracker revisi aplikasi & kebutuhan (needs)
-├── reports/              ← laporan setiap proses kerja ({date}_{time}_{task}.md)
+├── reports/              ← laporan setiap proses kerja ({ddmmyy}_{hhmm}_{task}.md)
 ├── scripts/              ← script/hook milik asisten (dibuat jika diperlukan)
 └── documentations/       ← dokumentasi produk (PRD, dll)
 ```
@@ -40,9 +40,11 @@ Struktur yang dipakai:
 
 - Setiap proses/pekerjaan yang dikerjakan **WAJIB menghasilkan laporan** di
   folder `.agents/reports/`.
-- Format nama file: `{date}_{time}_{task_name}.md`
-  - `date` = `YYYY-MM-DD`, `time` = `HH-MM`, `task_name` = nama tugas (huruf kecil, pakai `-`).
-  - Contoh: `2026-08-12_09-46_setup-agent-rules.md`
+- Format nama file: `{ddmmyy}_{hhmm}_{task_name}.md`
+  - `ddmmyy` = tanggal `DDMMYY` (2 digit hari, bulan, tahun — tanpa pemisah).
+  - `hhmm` = waktu `HHMM` (4 digit jam + menit — tanpa pemisah).
+  - `task_name` = nama tugas (huruf kecil, pakai `-`).
+  - Contoh: `120826_0946_setup-agent-rules.md` (12 Agustus 2026, 09:46)
 - Isi minimal laporan:
   1. Tanggal & waktu
   2. Nama tugas / deskripsi singkat
