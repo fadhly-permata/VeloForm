@@ -1,12 +1,10 @@
-import { getAppDb } from '../db/db';
+import { supabase } from '../lib/supabase';
 
 /**
- * Local task queue (Fase 4 — R-022).
- *
- * Tasks are persisted in `app_data.db` (`task_queue`) and processed by an
- * in-app scheduler (see `startQueueScheduler`). OS-level background execution
- * while the app is closed (expo-background-fetch) is intentionally deferred —
- * it needs real-device testing.
+ * Local task queue (Fase 4 — R-022), migrated to Supabase `usage.task_queue`
+ * (R-035). Tasks are per-user and processed by an in-app scheduler. OS-level
+ * background execution while the app is closed (expo-background-fetch) is
+ * deferred — it needs real-device testing.
  */
 
 export type TaskStatus = 'pending' | 'done' | 'error';
@@ -15,16 +13,17 @@ export interface QueuedTask {
   id: string;
   name: string;
   payload: Record<string, unknown>;
+  /** Epoch millis when the task becomes due. */
   runAt: number;
   status: TaskStatus;
   result: string | null;
 }
 
-interface DbTaskRow {
+interface DbRow {
   id: string;
   name: string;
-  payload: string;
-  run_at: number;
+  payload: unknown;
+  run_at: string;
   status: string;
   result: string | null;
 }
@@ -33,21 +32,26 @@ function newId(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function mapTask(row: DbTaskRow): QueuedTask {
+function mapTask(row: DbRow): QueuedTask {
   let payload: Record<string, unknown> = {};
-  try {
-    payload = JSON.parse(row.payload) as Record<string, unknown>;
-  } catch {
-    payload = {};
+  if (row.payload && typeof row.payload === 'object') {
+    payload = row.payload as Record<string, unknown>;
   }
   return {
     id: row.id,
     name: row.name,
     payload,
-    runAt: row.run_at,
+    runAt: new Date(row.run_at).getTime(),
     status: row.status === 'done' || row.status === 'error' ? row.status : 'pending',
     result: row.result,
   };
+}
+
+async function currentUserId(): Promise<string | null> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return user?.id ?? null;
 }
 
 /** Enqueue a task to run at a given epoch-millis time. */
@@ -56,15 +60,17 @@ export async function scheduleTask(
   payload: Record<string, unknown> = {},
   runAt: number = Date.now()
 ): Promise<void> {
-  const db = await getAppDb();
-  await db.runAsync(
-    `INSERT INTO task_queue (id, name, payload, run_at, status, created_at)
-     VALUES (?, ?, ?, ?, 'pending', CURRENT_TIMESTAMP)`,
-    newId(),
+  const userId = await currentUserId();
+  if (!userId) return;
+  const { error } = await supabase.from('task_queue').insert({
+    id: newId(),
+    user_id: userId,
     name,
-    JSON.stringify(payload),
-    runAt
-  );
+    payload,
+    run_at: new Date(runAt).toISOString(),
+    status: 'pending',
+  });
+  if (error) throw error;
 }
 
 /** Run all due pending tasks. `executor` may perform side effects; its return
@@ -72,43 +78,48 @@ export async function scheduleTask(
 export async function processDueTasks(
   executor: (task: QueuedTask) => Promise<string> = async () => 'executed'
 ): Promise<string[]> {
-  const db = await getAppDb();
-  const due = await db.getAllAsync<DbTaskRow>(
-    `SELECT id, name, payload, run_at, status, result FROM task_queue
-     WHERE status = 'pending' AND run_at <= ? ORDER BY run_at ASC`,
-    Date.now()
-  );
+  const userId = await currentUserId();
+  if (!userId) return [];
+  const { data, error } = await supabase
+    .from('task_queue')
+    .select('id, name, payload, run_at, status, result')
+    .eq('status', 'pending')
+    .lte('run_at', new Date().toISOString())
+    .order('run_at')
+    .limit(50);
+  if (error) throw error;
+
   const processed: string[] = [];
-  for (const row of due) {
-    const task = mapTask(row);
+  for (const row of data ?? []) {
+    const task = mapTask(row as DbRow);
     try {
       const result = await executor(task);
-      await db.runAsync(
-        `UPDATE task_queue SET status = 'done', result = ?, ran_at = CURRENT_TIMESTAMP WHERE id = ?`,
-        result,
-        task.id
-      );
+      await supabase
+        .from('task_queue')
+        .update({ status: 'done', result, ran_at: new Date().toISOString() })
+        .eq('id', task.id);
       processed.push(task.id);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      await db.runAsync(
-        `UPDATE task_queue SET status = 'error', result = ?, ran_at = CURRENT_TIMESTAMP WHERE id = ?`,
-        message,
-        task.id
-      );
+    } catch (execError) {
+      const message = execError instanceof Error ? execError.message : String(execError);
+      await supabase
+        .from('task_queue')
+        .update({ status: 'error', result: message, ran_at: new Date().toISOString() })
+        .eq('id', task.id);
     }
   }
   return processed;
 }
 
 export async function listTasks(limit = 20): Promise<QueuedTask[]> {
-  const db = await getAppDb();
-  const rows = await db.getAllAsync<DbTaskRow>(
-    `SELECT id, name, payload, run_at, status, result FROM task_queue
-     ORDER BY run_at DESC LIMIT ?`,
-    limit
-  );
-  return rows.map(mapTask);
+  const userId = await currentUserId();
+  if (!userId) return [];
+  const { data, error } = await supabase
+    .from('task_queue')
+    .select('id, name, payload, run_at, status, result')
+    .order('run_at', { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return ((data ?? []) as DbRow[]).map(mapTask);
 }
 
 /**

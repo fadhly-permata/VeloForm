@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getPreference, setPreference } from '../db/db';
+import { getPreference, setPreference } from '../services/preferences';
 
 export type ThemeMode = 'light' | 'dark' | 'auto';
 

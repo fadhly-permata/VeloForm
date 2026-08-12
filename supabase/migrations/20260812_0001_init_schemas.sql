@@ -9,7 +9,8 @@
 --
 -- Skema:
 --   usage    → data penggunaan aplikasi: profil user (role + tenant),
---              preferensi, AI provider, telemetri.
+--              preferensi, AI provider, task queue, telemetri.
+--              (R-035: menggantikan SQLite lokal — semua data aplikasi di sini.)
 --   business → data bisnis: Master/Transaction/Report + Workflow.
 --              Terisolasi per nama usaha (business_id) via RLS (R-031).
 -- ============================================================================
@@ -66,6 +67,19 @@ create table usage.app_events (
   event       text not null,
   payload     jsonb,
   created_at  timestamptz not null default now()
+);
+
+-- Task queue per-user (R-022/R-035 — menggantikan SQLite app_data.db).
+create table usage.task_queue (
+  id         text primary key,
+  user_id    uuid not null references auth.users (id) on delete cascade,
+  name       text not null,
+  payload    jsonb not null default '{}'::jsonb,
+  run_at     timestamptz not null default now(),
+  status     text not null default 'pending' check (status in ('pending', 'done', 'error')),
+  result     text,
+  created_at timestamptz not null default now(),
+  ran_at     timestamptz
 );
 
 -- ---------------------------------------------------------------------------
@@ -165,6 +179,7 @@ alter table usage.profiles           enable row level security;
 alter table usage.user_preferences   enable row level security;
 alter table usage.ai_providers       enable row level security;
 alter table usage.app_events         enable row level security;
+alter table usage.task_queue         enable row level security;
 alter table business.businesses      enable row level security;
 alter table business.form_masters    enable row level security;
 alter table business.form_transactions enable row level security;
@@ -209,6 +224,10 @@ create policy "events_select_tenant" on usage.app_events
   for select using (
     business_id = usage.current_business_id() or user_id = auth.uid()
   );
+
+-- usage.task_queue: per-user.
+create policy "task_queue_own" on usage.task_queue
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
 
 -- business.businesses: semua user login boleh lihat (untuk join), hanya
 -- pembuatnya yang boleh ubah.

@@ -25,7 +25,7 @@ Fase 1 dan 2 bisa dikerjakan paralel; Fase 3 butuh Fase 2; Fase 4 butuh Fase 3.
 |--------|-------|-----------|-----------|--------|
 | R-006 | WP-01 | **App shell & navigasi** — struktur layar utama: Studio, Workflow, Reports, Settings (+ bottom tabs / sidebar responsif) | Tinggi | ✅ |
 | R-007 | WP-02 | **Sistem tema (Light/Dark/Auto)** — ThemeProvider + `useColorScheme`, palet token warna (variabel), siap dipakai semua layar | Tinggi | ✅ |
-| R-008 | WP-03 | **Dual SQLite** — setup `expo-sqlite` dua koneksi: `system_metadata.db` & `app_data.db`, + mekanisme migrasi skema | Tinggi | ✅ |
+| R-008 | WP-03 | **Penyimpanan awal** — awalnya dual SQLite (`system_metadata.db` & `app_data.db`); **digantikan total oleh Supabase** (R-028/R-035, `expo-sqlite` dihapus) | Tinggi | ✅ (digantikan) |
 | R-009 | WP-04 | **State management (Zustand)** — store global: pengaturan (settings), tema aktif, konfigurasi AI, data runtime | Sedang | ✅ |
 
 ## Fase 1 — Module 1: System Settings & Theme Engine
@@ -59,7 +59,7 @@ Fase 1 dan 2 bisa dikerjakan paralel; Fase 3 butuh Fase 2; Fase 4 butuh Fase 3.
 |--------|-------|-----------|-----------|--------|
 | R-020 | WP-15 | **Runtime form dinamis** — render form/layar dari skema yang di-generate | Tinggi | ✅ |
 | R-021 | WP-16 | **Trigger form callbacks** — validasi & conditional visibility (`ON_CHANGE`), simpan transaksi saat submit (`ON_SUBMIT`) | Tinggi | ✅ |
-| R-022 | WP-17 | **Local task queue + scheduler in-app** — task queue SQLite + interval in-app; background OS (`expo-background-fetch`) ditunda (butuh test device) | Sedang | ✅ (in-app) |
+| R-022 | WP-17 | **Task queue + scheduler in-app** — task queue di `usage.task_queue` (Supabase, R-035) + interval in-app; background OS (`expo-background-fetch`) ditunda (butuh test device) | Sedang | ✅ (in-app) |
 | R-023 | WP-18 | **Decision nodes & eksekusi workflow** — engine action/decision steps + log eksekusi | Tinggi | ✅ |
 
 ## Fase 5 — Data Bisnis & Laporan
@@ -68,6 +68,7 @@ Fase 1 dan 2 bisa dikerjakan paralel; Fase 3 butuh Fase 2; Fase 4 butuh Fase 3.
 |--------|-------|-----------|-----------|--------|
 | R-024 | WP-19 | **CRUD Master & Transaction** — list + preview + isi form + hapus skema & transaksi (Supabase `business.*`) | Sedang | ✅ |
 | R-025 | WP-20 | **Report generator** — ringkasan laporan dari data transaksi (total, per-form, terbaru) | Rendah | ✅ |
+| R-035 | — | **Hapus total akses SQLite** — preferensi, AI provider, dan task queue pindah ke Supabase `usage`; `expo-sqlite` & `src/db/db.ts` dihapus | Tinggi | ✅ |
 
 ---
 
@@ -95,7 +96,7 @@ Fase 1 dan 2 bisa dikerjakan paralel; Fase 3 butuh Fase 2; Fase 4 butuh Fase 3.
 | **Skema `business`** | Struktur form Master/Transaction + Report (data bisnis) — RLS per-user |
 | **Skema `usage`** | Data penggunaan aplikasi (preferensi user, konfigurasi AI provider, telemetri/usage) — RLS per-user |
 | **Auth** | Google OAuth via Supabase Auth; seluruh query dibatasi ke user yang login (RLS) |
-| **Dep** | `@supabase/supabase-js` menggantikan `expo-sqlite` untuk data cloud; SQLite lokal opsional untuk offline cache |
+| **Dep** | `@supabase/supabase-js` untuk semua data (bisnis + preferensi + AI provider + task queue); `expo-sqlite` **dihapus** (R-035) — API key tetap di secure storage |
 | **Env** | `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (server-side) — lihat K-003/K-004 |
 
 **Langkah:** (1) setup project Supabase + skema + Google OAuth → (2) client `lib/supabase.ts` + store auth Zustand → (3) gate login (Google) di App → (4) migrasikan helper DB (preferences, AI provider) ke query Supabase → (5) sesuaikan fase 3–5 ke skema Supabase.

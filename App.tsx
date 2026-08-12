@@ -7,7 +7,6 @@ import AdminShell from './src/components/admin/AdminShell';
 import AuthScreen from './src/screens/AuthScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import { useAppTheme } from './src/theme';
-import { initDatabases } from './src/db/db';
 import { useSettingsStore } from './src/store/settingsStore';
 import { useAiStore } from './src/store/aiStore';
 import { useAuthStore } from './src/store/authStore';
@@ -19,19 +18,17 @@ export default function App() {
   const session = useAuthStore((s) => s.session);
   const profile = useAuthStore((s) => s.profile);
 
-  // Init setiap subsistem secara independen — kegagalan satu (mis. SQLite web)
-  // tidak boleh menghalangi yang lain (auth/tema/AI).
+  // Init setiap subsistem secara independen — kegagalan satu tidak boleh
+  // menghalangi yang lain (auth/tema/AI).
   useEffect(() => {
     let cancelled = false;
     let stopScheduler: (() => void) | null = null;
     const init = async () => {
-      await initDatabases().catch(() => {});
-      if (cancelled) return;
       await useSettingsStore.getState().loadThemeMode();
       await useSettingsStore.getState().loadLanguage();
       await useAiStore.getState().loadProviders();
       await useAuthStore.getState().init();
-      // Local task queue scheduler (R-022) — in-app while the app is open.
+      // Task queue scheduler (R-022) — in-app while the app is open.
       if (!cancelled) stopScheduler = startQueueScheduler();
     };
     void init();
@@ -40,6 +37,14 @@ export default function App() {
       stopScheduler?.();
     };
   }, []);
+
+  // Setelah login, muat ulang preferensi & AI provider milik user (R-035).
+  useEffect(() => {
+    if (!session) return;
+    void useSettingsStore.getState().loadThemeMode();
+    void useSettingsStore.getState().loadLanguage();
+    void useAiStore.getState().loadProviders();
+  }, [session]);
 
   let content: React.ReactNode;
   if (authStatus === 'loading') {

@@ -5,7 +5,8 @@ import {
   setActiveAiProvider,
   upsertAiProvider,
   type AiProviderRow,
-} from '../db/db';
+} from '../services/aiRepo';
+import { useAuthStore } from './authStore';
 import {
   deleteSecret,
   getSecret,
@@ -47,8 +48,9 @@ export const useAiStore = create<AiState>()((set, get) => ({
   loaded: false,
 
   loadProviders: async () => {
+    const userId = useAuthStore.getState().session?.user?.id;
     try {
-      let providers = await getAiProviders();
+      let providers = userId ? await getAiProviders() : [];
 
       // Dev/testing convenience: when an OpenRouter key is provided via the
       // EXPO_PUBLIC_OPENROUTER_API_KEY env var and no provider exists yet,
@@ -64,15 +66,15 @@ export const useAiStore = create<AiState>()((set, get) => ({
           model: '',
           isActive: true,
         };
-        await upsertAiProvider(seeded);
-        await saveSecret(secretKeyFor(seeded.id), envKey.trim());
-        providers = await getAiProviders();
+        if (userId) await upsertAiProvider(seeded); // persist hanya saat login
+        await saveSecret(secretKeyFor(seeded.id), envKey.trim()).catch(() => {});
+        providers = userId ? await getAiProviders() : [seeded];
       }
 
       set({ providers, loaded: true });
     } catch (error) {
-      // SQLite tidak tersedia (mis. web preview tanpa OPFS) — fallback: seed
-      // provider dari env langsung di memori supaya Studio tetap bisa dipakai.
+      // Supabase belum siap / belum login — fallback: seed provider dari env
+      // langsung di memori supaya Studio tetap bisa dipakai.
       console.warn('Failed to load AI providers (fallback to env):', error);
       const envKey = process.env.EXPO_PUBLIC_OPENROUTER_API_KEY;
       if (envKey && envKey.trim().length > 0) {

@@ -4,8 +4,12 @@ Backend & database VeloForm memakai **Supabase** (Postgres). Dua schema:
 
 | Schema | Isi | Contoh tabel |
 |--------|-----|--------------|
-| `usage`  | Data penggunaan aplikasi | `profiles` (user, role, tenant), `user_preferences`, `ai_providers`, `app_events` |
+| `usage`  | Data penggunaan aplikasi | `profiles` (user, role, tenant), `user_preferences`, `ai_providers`, `task_queue`, `app_events` |
 | `business` | Data bisnis (terisolasi per usaha) | `businesses`, `form_masters`, `form_transactions`, `reports`, `workflows` |
+
+> **R-035:** SQLite lokal sudah **dihapus** — preferensi, AI provider, dan task
+> queue kini juga di Supabase (`usage`). API key AI provider tetap disimpan di
+> secure storage perangkat (tidak di DB).
 
 ## Langkah Setup (sekali saja, di dashboard Supabase)
 

@@ -2,8 +2,8 @@ import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
 /**
- * Secrets (AI provider API keys) are kept out of SQLite.
- * - Native (Android/iOS): expo-secure-store — encrypted at rest (WP-09).
+ * Secrets (AI provider API keys) are kept out of the database (WP-09, R-035).
+ * - Native (Android/iOS): expo-secure-store — encrypted at rest.
  * - Web: localStorage fallback for the dev preview (NOT hardware encrypted).
  *   Real web hardening (e.g. server-side proxying) is a follow-up decision.
  */
