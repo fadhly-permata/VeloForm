@@ -53,5 +53,5 @@
 | ID | Tanggal | Kebutuhan | Terpenuhi | Catatan |
 |----|---------|-----------|-----------|---------|
 | — | — | *(contoh format)* API key AI provider (OpenRouter/OpenAI/HuggingFace) | ❌ | Isi lewat Keys/API keys di Freebuff, pakai prefix `EXPO_PUBLIC_` |
-| K-003 | 2026-08-12 | **Supabase project + kredensial** — `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY` (+ `SUPABASE_SERVICE_ROLE_KEY` untuk operasi server-side, jangan di bundle) | ❌ | Buat project di supabase.com → buka [setup link](https://index.trygravity.ai/go/4bf32aeb-ed11-4cd3-b930-7ea94695839f) → paste nilai lewat Keys/API keys Freebuff. Perlu: 2 skema (`business` & `usage`), Google OAuth enabled |
+| K-003 | 2026-08-12 | **Supabase project + kredensial** — `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY` (+ `SUPABASE_SERVICE_ROLE_KEY` untuk operasi server-side, jangan di bundle) | 🔶 Sebagian | URL + publishable key ✅ diterima user (11:02); `SUPABASE_SERVICE_ROLE_KEY` belum — perlu dibuat dari dashboard (lihat catatan) |
 | K-004 | 2026-08-12 | **Google OAuth credentials** — Client ID/Secret untuk Supabase Auth provider Google | ❌ | Di-set dari dashboard Google Cloud Console → Supabase Auth providers; Client ID diset di Supabase, bukan di app |
