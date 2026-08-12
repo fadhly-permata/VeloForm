@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase';
 
 /**
- * AI provider configurations over Supabase `usage.ai_providers` (R-035).
+ * AI provider configurations over Supabase `logic.ai_providers` (R-035).
  * Replaces the local SQLite `ai_providers` table. API keys are NOT stored
  * here — they stay in device secure storage (WP-09).
  */

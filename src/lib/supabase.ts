@@ -7,9 +7,9 @@ import { createClient } from '@supabase/supabase-js';
  *   EXPO_PUBLIC_SUPABASE_URL
  *   EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY
  *
- * Default schema = `usage` (profil user, preferensi, AI provider, telemetri).
- * Data bisnis (Master/Transaction/Report) di schema `business` — akses lewat
- * `.schema('business')` per query. Kedua schema harus di-expose di dashboard
+ * Default schema = `logic` (profil user, preferensi, AI provider, telemetri).
+ * Data bisnis (Master/Transaction/Report) di schema `bussiness` — akses lewat
+ * `.schema('bussiness')` per query. Kedua schema harus di-expose di dashboard
  * Supabase: Settings → API → Exposed schemas.
  */
 export const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
@@ -23,7 +23,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
   },
-  db: { schema: 'usage' },
+  db: { schema: 'logic' },
 });
 
 /** Base URL untuk redirect OAuth (web). */

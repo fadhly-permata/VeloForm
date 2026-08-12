@@ -99,7 +99,19 @@ Struktur yang dipakai:
 
 ---
 
-## 7. Commit & Push ke GitHub
+## 8. PRD Harus Selalu Inline dengan Aplikasi
+
+- **Setiap melakukan revisi** (perubahan kode/database/fitur), file
+  `.agents/documentations/PRD.MD` **WAJIB diperbarui** agar selalu inline dengan
+  kondisi aplikasi aktual (versi, skema database, alur, modul, env var, status).
+- Kerjakan update PRD **di dalam proses yang sama** dengan revisinya — jangan
+  ditunda ke proses terpisah.
+- PRD berisi kondisi **sekarang** (aplikasi yang berjalan); revisi yang baru
+  dicatat belum dieksekusi **tidak** boleh ditulis sebagai sudah ada di aplikasi.
+
+---
+
+## 9. Commit & Push ke GitHub
 
 - **Setiap selesai melakukan perubahan** (terutama perubahan kode aplikasi,
   termasuk juga file kerja di `.agents/`), **WAJIB commit & push ke GitHub** —

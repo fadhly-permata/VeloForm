@@ -3,9 +3,10 @@
 **Product Name:** VeloForm
 **Target Platforms:** Cross-Platform (Web, Android, iOS)
 **Core Stack:** React Native / Expo (SDK 51+), TypeScript, Supabase (Postgres), Zustand, React Native Paper
-**Document Version:** 2.1.0
+**Document Version:** 2.2.0
 **Change Summary (v1.2.0 → v2.0.0):** Backend SQLite → **Supabase** (2 skema), **Google Auth** saja (email login dihapus), **role-based access** (admin/operator/viewer), **multi-tenant per nama usaha**, **tema admin (AdminLTE)**, dan **multi-language (English US & Bahasa Indonesia)**.
-**Change Summary (v2.0.0 → v2.1.0, R-035):** **SQLite dihapus total** — preferensi (`user_preferences`), AI provider (`ai_providers`), dan task queue (`task_queue`) kini juga di Supabase schema `usage`; `expo-sqlite` tidak lagi dipakai.
+**Change Summary (v2.0.0 → v2.1.0, R-035):** **SQLite dihapus total** — preferensi (`user_preferences`), AI provider (`ai_providers`), dan task queue (`task_queue`) kini juga di Supabase schema `logic`; `expo-sqlite` tidak lagi dipakai.
+**Change Summary (v2.1.0 → v2.2.0, R-036):** **Rename nama skema** sesuai permintaan user — `usage` → **`logic`** (data penggunaan aplikasi) & `business` → **`bussiness`** (data bisnis) di seluruh migrasi, kode, dan dokumen. R-037 (form pendaftaran user baru) **dicatat, belum dieksekusi**.
 
 ---
 
@@ -40,7 +41,7 @@
 | `viewer` | Hanya melihat |
 
 - Default role user baru: `operator`.
-- User yang **membuat usaha baru otomatis menjadi admin** usaha itu (trigger `business.set_creator_admin`).
+- User yang **membuat usaha baru otomatis menjadi admin** usaha itu (trigger `bussiness.set_creator_admin`).
 
 ### 2.3 Multi-Tenancy per Nama Usaha (R-031)
 - User dikelompokkan berdasarkan **nama usaha/perusahaan** (flow onboarding setelah login Google: buat usaha baru → jadi admin, atau gabung usaha yang sudah ada).
@@ -96,9 +97,9 @@
 
 ## 4. Database Architecture — Supabase (Postgres)
 
-**Keputusan (R-028/R-035):** seluruh penyimpanan berpindah dari SQLite lokal ke **Supabase** (error inisialisasi SQLite web — expo-sqlite/wa-sqlite/OPFS — berulang). **R-035: akses SQLite dihapus total** — preferensi, AI provider, dan task queue pindah ke schema `usage`; satu-satunya data di perangkat adalah **API key AI provider** (secure storage, WP-09).
+**Keputusan (R-028/R-035):** seluruh penyimpanan berpindah dari SQLite lokal ke **Supabase** (error inisialisasi SQLite web — expo-sqlite/wa-sqlite/OPFS — berulang). **R-035: akses SQLite dihapus total** — preferensi, AI provider, dan task queue pindah ke schema `logic`; satu-satunya data di perangkat adalah **API key AI provider** (secure storage, WP-09). **R-036: nama skema = `logic` & `bussiness`** (sesuai permintaan user).
 
-### 4.1 Schema `usage` — Data penggunaan aplikasi
+### 4.1 Schema `logic` — Data penggunaan aplikasi
 | Tabel | Isi |
 |-------|-----|
 | `profiles` | Profil user: email, nama, avatar, **role**, **business_id/business_name** (tenant) |
@@ -107,7 +108,7 @@
 | `task_queue` | Task queue per-user (dari SQLite `app_data.db`, R-035) |
 | `app_events` | Telemetri / log penggunaan aplikasi |
 
-### 4.2 Schema `business` — Data bisnis (terisolasi per usaha)
+### 4.2 Schema `bussiness` — Data bisnis (terisolasi per usaha)
 | Tabel | Isi |
 |-------|-----|
 | `businesses` | Daftar usaha/perusahaan (tenant) |
@@ -132,7 +133,7 @@
 | `SUPABASE_SERVICE_ROLE_KEY` | Secret server-side (opsional, jangan di-bundle) | 🔶 belum |
 | Google OAuth Client ID/Secret | Di-set di dashboard Supabase (bukan di app) | ❌ belum |
 
-**Setup dashboard Supabase (sekali):** (1) jalankan migrasi; (2) expose schema `usage` & `business` (Settings → API → Exposed schemas); (3) aktifkan Google provider + Redirect URL aplikasi. Detail: `supabase/README.md`.
+**Setup dashboard Supabase (sekali):** (1) jalankan migrasi; (2) expose schema `logic` & `bussiness` (Settings → API → Exposed schemas); (3) aktifkan Google provider + Redirect URL aplikasi. Detail: `supabase/README.md`.
 
 ---
 
@@ -164,5 +165,7 @@
 | Fase 4 — Runtime & Workflow | WP-15..WP-18 | ✅ (background OS menyusul) |
 | Fase 5 — Data Bisnis & Laporan | WP-19..WP-20 | ✅ |
 | Hapus SQLite — semua data ke Supabase | R-035 | ✅ |
+| Rename skema DB (`usage`→`logic`, `business`→`bussiness`) | R-036 | ✅ |
+| Form pendaftaran user baru (autofill Google) | R-037 | 🔲 Baru (dicatat, belum dieksekusi) |
 
 > Status terperinci per revisi: `.agents/revisions.md` & `.agents/PLAN.md`.

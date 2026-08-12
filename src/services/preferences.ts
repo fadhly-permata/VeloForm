@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase';
 
 /**
- * User preferences over Supabase `usage.user_preferences` (R-035).
+ * User preferences over Supabase `logic.user_preferences` (R-035).
  * Replaces the local SQLite `user_preferences` table. Keyed per auth user;
  * before login there is no persistence (in-memory defaults are used).
  */

@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase';
 
 /**
- * Local task queue (Fase 4 — R-022), migrated to Supabase `usage.task_queue`
+ * Local task queue (Fase 4 — R-022), migrated to Supabase `logic.task_queue`
  * (R-035). Tasks are per-user and processed by an in-app scheduler. OS-level
  * background execution while the app is closed (expo-background-fetch) is
  * deferred — it needs real-device testing.

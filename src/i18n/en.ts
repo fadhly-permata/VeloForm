@@ -41,7 +41,7 @@ export const en = {
   'auth.notConfigured':
     'Supabase is not fully configured. Add EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY in Keys/API keys.',
   'auth.dbUnavailable':
-    'The Supabase database is not ready yet. Run the migration in supabase/migrations and expose the usage & business schemas (Settings → API → Exposed schemas).',
+    'The Supabase database is not ready yet. Run the migration in supabase/migrations and expose the logic & bussiness schemas (Settings → API → Exposed schemas).',
   'auth.signInWithGoogle': 'Continue with Google',
   'auth.loginFailed':
     'Login failed: {error} — make sure the Google provider is enabled in the Supabase dashboard (Authentication → Providers → Google).',
@@ -51,7 +51,7 @@ export const en = {
   'onboard.subtitle':
     'Data, form designs, and reports are grouped by business name. Users from other businesses cannot see your data.',
   'onboard.dbUnavailable':
-    'The Supabase database is not ready yet. Run the migration in supabase/migrations and expose the usage & business schemas.',
+    'The Supabase database is not ready yet. Run the migration in supabase/migrations and expose the logic & bussiness schemas.',
   'onboard.createNew': 'Create a new business',
   'onboard.businessNameLabel': 'Business / company name',
   'onboard.createAndAdmin': 'Create & become admin',

@@ -3,27 +3,27 @@
 -- ----------------------------------------------------------------------------
 -- Cara pakai:
 --   1. Dashboard Supabase → SQL Editor → New query → paste seluruh file → Run.
---   2. Settings → API → Exposed schemas → tambahkan `usage` dan `business`.
+--   2. Settings → API → Exposed schemas → tambahkan `logic` dan `bussiness`.
 --   3. Authentication → Providers → Google → aktifkan + isi Client ID/Secret
 --      (K-004) & Redirect URL aplikasi.
 --
 -- Skema:
---   usage    → data penggunaan aplikasi: profil user (role + tenant),
+--   logic    → data penggunaan aplikasi: profil user (role + tenant),
 --              preferensi, AI provider, task queue, telemetri.
 --              (R-035: menggantikan SQLite lokal — semua data aplikasi di sini.)
---   business → data bisnis: Master/Transaction/Report + Workflow.
+--   bussiness → data bisnis: Master/Transaction/Report + Workflow.
 --              Terisolasi per nama usaha (business_id) via RLS (R-031).
 -- ============================================================================
 
 create extension if not exists pgcrypto;
 
 -- ---------------------------------------------------------------------------
--- Schema `usage`
+-- Schema `logic`
 -- ---------------------------------------------------------------------------
-create schema if not exists usage;
+create schema if not exists logic;
 
 -- Profil user: role (admin/operator/viewer) + kelompok usaha (tenant).
-create table usage.profiles (
+create table logic.profiles (
   id            uuid primary key references auth.users (id) on delete cascade,
   email         text,
   full_name     text,
@@ -37,7 +37,7 @@ create table usage.profiles (
 );
 
 -- Preferensi per-user (mis. tema aplikasi).
-create table usage.user_preferences (
+create table logic.user_preferences (
   user_id    uuid not null references auth.users (id) on delete cascade,
   pref_key   text not null,
   pref_value text,
@@ -47,7 +47,7 @@ create table usage.user_preferences (
 
 -- Konfigurasi AI provider per-user (API key TIDAK disimpan di sini — WP-09:
 -- key aman di perangkat via expo-secure-store).
-create table usage.ai_providers (
+create table logic.ai_providers (
   id         text primary key,
   user_id    uuid not null references auth.users (id) on delete cascade,
   type       text not null,
@@ -60,7 +60,7 @@ create table usage.ai_providers (
 );
 
 -- Telemetri / log penggunaan aplikasi.
-create table usage.app_events (
+create table logic.app_events (
   id          bigint generated always as identity primary key,
   user_id     uuid references auth.users (id) on delete set null,
   business_id uuid,
@@ -70,7 +70,7 @@ create table usage.app_events (
 );
 
 -- Task queue per-user (R-022/R-035 — menggantikan SQLite app_data.db).
-create table usage.task_queue (
+create table logic.task_queue (
   id         text primary key,
   user_id    uuid not null references auth.users (id) on delete cascade,
   name       text not null,
@@ -83,12 +83,12 @@ create table usage.task_queue (
 );
 
 -- ---------------------------------------------------------------------------
--- Schema `business`
+-- Schema `bussiness`
 -- ---------------------------------------------------------------------------
-create schema if not exists business;
+create schema if not exists bussiness;
 
 -- Daftar usaha/perusahaan (tenant).
-create table business.businesses (
+create table bussiness.businesses (
   id         uuid primary key default gen_random_uuid(),
   name       text not null unique,
   created_by uuid references auth.users (id) on delete set null,
@@ -96,9 +96,9 @@ create table business.businesses (
 );
 
 -- Struktur form (Master/Transaction/Report) yang di-generate.
-create table business.form_masters (
+create table bussiness.form_masters (
   id          uuid primary key default gen_random_uuid(),
-  business_id uuid not null references business.businesses (id) on delete cascade,
+  business_id uuid not null references bussiness.businesses (id) on delete cascade,
   name        text not null,
   kind        text not null check (kind in ('master', 'transaction', 'report')),
   schema_json jsonb not null default '{}'::jsonb,
@@ -108,20 +108,20 @@ create table business.form_masters (
 );
 
 -- Data transaksi hasil submit form.
-create table business.form_transactions (
+create table bussiness.form_transactions (
   id          uuid primary key default gen_random_uuid(),
-  business_id uuid not null references business.businesses (id) on delete cascade,
-  form_id     uuid not null references business.form_masters (id) on delete cascade,
+  business_id uuid not null references bussiness.businesses (id) on delete cascade,
+  form_id     uuid not null references bussiness.form_masters (id) on delete cascade,
   data        jsonb not null default '{}'::jsonb,
   created_by  uuid references auth.users (id) on delete set null,
   created_at  timestamptz not null default now()
 );
 
 -- Laporan (view/kumpulan data).
-create table business.reports (
+create table bussiness.reports (
   id          uuid primary key default gen_random_uuid(),
-  business_id uuid not null references business.businesses (id) on delete cascade,
-  form_id     uuid not null references business.form_masters (id) on delete cascade,
+  business_id uuid not null references bussiness.businesses (id) on delete cascade,
+  form_id     uuid not null references bussiness.form_masters (id) on delete cascade,
   title       text not null,
   filter      jsonb not null default '{}'::jsonb,
   created_by  uuid references auth.users (id) on delete set null,
@@ -129,9 +129,9 @@ create table business.reports (
 );
 
 -- Workflow (alur keputusan / otomasi bisnis).
-create table business.workflows (
+create table bussiness.workflows (
   id          uuid primary key default gen_random_uuid(),
-  business_id uuid not null references business.businesses (id) on delete cascade,
+  business_id uuid not null references bussiness.businesses (id) on delete cascade,
   name        text not null,
   definition  jsonb not null default '{}'::jsonb,
   created_by  uuid references auth.users (id) on delete set null,
@@ -142,23 +142,23 @@ create table business.workflows (
 -- ---------------------------------------------------------------------------
 -- Helper: business_id milik user yang sedang login
 -- ---------------------------------------------------------------------------
-create or replace function usage.current_business_id()
+create or replace function logic.current_business_id()
 returns uuid
 language sql
 stable
 security definer
 as $$
-  select business_id from usage.profiles where id = auth.uid();
+  select business_id from logic.profiles where id = auth.uid();
 $$;
 
 -- Promosi otomatis: user yang membuat usaha baru menjadi admin usaha itu.
-create or replace function business.set_creator_admin()
+create or replace function bussiness.set_creator_admin()
 returns trigger
 language plpgsql
 security definer
 as $$
 begin
-  update usage.profiles
+  update logic.profiles
      set role          = 'admin',
          business_id   = new.id,
          business_name = new.name,
@@ -169,101 +169,101 @@ end;
 $$;
 
 create trigger trg_set_creator_admin
-  after insert on business.businesses
-  for each row execute function business.set_creator_admin();
+  after insert on bussiness.businesses
+  for each row execute function bussiness.set_creator_admin();
 
 -- ---------------------------------------------------------------------------
 -- Row Level Security
 -- ---------------------------------------------------------------------------
-alter table usage.profiles           enable row level security;
-alter table usage.user_preferences   enable row level security;
-alter table usage.ai_providers       enable row level security;
-alter table usage.app_events         enable row level security;
-alter table usage.task_queue         enable row level security;
-alter table business.businesses      enable row level security;
-alter table business.form_masters    enable row level security;
-alter table business.form_transactions enable row level security;
-alter table business.reports         enable row level security;
-alter table business.workflows       enable row level security;
+alter table logic.profiles           enable row level security;
+alter table logic.user_preferences   enable row level security;
+alter table logic.ai_providers       enable row level security;
+alter table logic.app_events         enable row level security;
+alter table logic.task_queue         enable row level security;
+alter table bussiness.businesses      enable row level security;
+alter table bussiness.form_masters    enable row level security;
+alter table bussiness.form_transactions enable row level security;
+alter table bussiness.reports         enable row level security;
+alter table bussiness.workflows       enable row level security;
 
--- usage.profiles: user hanya mengelola profilnya sendiri.
+-- logic.profiles: user hanya mengelola profilnya sendiri.
 -- Role boleh diubah ke 'operator' oleh siapa pun (self-service), selain itu
 -- hanya admin yang boleh mengubahnya.
-create policy "profiles_select_own" on usage.profiles
+create policy "profiles_select_own" on logic.profiles
   for select using (id = auth.uid());
 
-create policy "profiles_insert_own" on usage.profiles
+create policy "profiles_insert_own" on logic.profiles
   for insert with check (id = auth.uid());
 
-create policy "profiles_update_own" on usage.profiles
+create policy "profiles_update_own" on logic.profiles
   for update using (id = auth.uid())
   with check (
     id = auth.uid()
     and (
       role = 'operator'
       or exists (
-        select 1 from usage.profiles p
+        select 1 from logic.profiles p
         where p.id = auth.uid() and p.role = 'admin'
       )
     )
   );
 
--- usage.user_preferences: per-user.
-create policy "prefs_own" on usage.user_preferences
+-- logic.user_preferences: per-user.
+create policy "prefs_own" on logic.user_preferences
   for all using (user_id = auth.uid()) with check (user_id = auth.uid());
 
--- usage.ai_providers: per-user.
-create policy "providers_own" on usage.ai_providers
+-- logic.ai_providers: per-user.
+create policy "providers_own" on logic.ai_providers
   for all using (user_id = auth.uid()) with check (user_id = auth.uid());
 
--- usage.app_events: insert event sendiri; lihat event sesuai tenant.
-create policy "events_insert_own" on usage.app_events
+-- logic.app_events: insert event sendiri; lihat event sesuai tenant.
+create policy "events_insert_own" on logic.app_events
   for insert with check (auth.uid() = user_id);
 
-create policy "events_select_tenant" on usage.app_events
+create policy "events_select_tenant" on logic.app_events
   for select using (
-    business_id = usage.current_business_id() or user_id = auth.uid()
+    business_id = logic.current_business_id() or user_id = auth.uid()
   );
 
--- usage.task_queue: per-user.
-create policy "task_queue_own" on usage.task_queue
+-- logic.task_queue: per-user.
+create policy "task_queue_own" on logic.task_queue
   for all using (user_id = auth.uid()) with check (user_id = auth.uid());
 
--- business.businesses: semua user login boleh lihat (untuk join), hanya
+-- bussiness.businesses: semua user login boleh lihat (untuk join), hanya
 -- pembuatnya yang boleh ubah.
-create policy "businesses_select_all" on business.businesses
+create policy "businesses_select_all" on bussiness.businesses
   for select to authenticated using (true);
 
-create policy "businesses_insert_auth" on business.businesses
+create policy "businesses_insert_auth" on bussiness.businesses
   for insert to authenticated with check (auth.uid() is not null);
 
-create policy "businesses_update_owner" on business.businesses
+create policy "businesses_update_owner" on bussiness.businesses
   for update using (created_by = auth.uid()) with check (created_by = auth.uid());
 
 -- TENANT ISOLATION (R-031): data bisnis hanya bisa dibaca/ditulis oleh user
 -- yang business_id-nya sama (A ≠ B).
-create policy "forms_tenant" on business.form_masters
-  for all using (business_id = usage.current_business_id())
-             with check (business_id = usage.current_business_id());
+create policy "forms_tenant" on bussiness.form_masters
+  for all using (business_id = logic.current_business_id())
+             with check (business_id = logic.current_business_id());
 
-create policy "transactions_tenant" on business.form_transactions
-  for all using (business_id = usage.current_business_id())
-             with check (business_id = usage.current_business_id());
+create policy "transactions_tenant" on bussiness.form_transactions
+  for all using (business_id = logic.current_business_id())
+             with check (business_id = logic.current_business_id());
 
-create policy "reports_tenant" on business.reports
-  for all using (business_id = usage.current_business_id())
-             with check (business_id = usage.current_business_id());
+create policy "reports_tenant" on bussiness.reports
+  for all using (business_id = logic.current_business_id())
+             with check (business_id = logic.current_business_id());
 
-create policy "workflows_tenant" on business.workflows
-  for all using (business_id = usage.current_business_id())
-             with check (business_id = usage.current_business_id());
+create policy "workflows_tenant" on bussiness.workflows
+  for all using (business_id = logic.current_business_id())
+             with check (business_id = logic.current_business_id());
 
 -- ---------------------------------------------------------------------------
 -- Grant akses ke role `authenticated` (user yang sudah login)
 -- ---------------------------------------------------------------------------
 grant usage on schema usage, business to authenticated;
 
-grant all on usage.profiles, usage.user_preferences, usage.ai_providers,
-  usage.app_events, business.businesses, business.form_masters,
-  business.form_transactions, business.reports, business.workflows
+grant all on logic.profiles, logic.user_preferences, logic.ai_providers,
+  logic.app_events, bussiness.businesses, bussiness.form_masters,
+  bussiness.form_transactions, bussiness.reports, bussiness.workflows
   to authenticated;
