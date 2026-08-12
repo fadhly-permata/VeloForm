@@ -42,6 +42,7 @@
 | R-025 | 2026-08-12 | WP-20 Report generator — lihat `.agents/PLAN.md` | Rendah | 🔲 Baru | Breakdown PRD |
 | R-026 | 2026-08-12 | Hilangkan nama kontributor "codebuff-team Codebuff" yang masih muncul di panel kontributor GitHub (history sudah bersih — kemungkinan cache GitHub; pantau sampai refresh) | Sedang | ⏸ Ditunda | Menunggu cache kontributor GitHub refresh (±24-48 jam) — laporan: `.agents/reports/120826_1018_record-codebuff-contributor.md` |
 | R-027 | 2026-08-12 | Fix icon/image tidak tampil di web (kotak kosong) — CORS origin proxy di Metro + fix transaksi SQLite web | Tinggi | ✅ Selesai | Dilaporkan user — laporan: `.agents/reports/120826_1042_fix-icons-cors-webdb.md` |
+| R-028 | 2026-08-12 | Ganti database SQLite → **Supabase** (2 skema terpisah: form/master/transaksi & report; data penggunaan aplikasi) + **Google Auth login** (aplikasi berjalan per-user login) | Tinggi | 🔲 Baru | Diminta user karena error SQLite web berulang — rincian & kebutuhan di bawah |
 
 ---
 
@@ -52,3 +53,5 @@
 | ID | Tanggal | Kebutuhan | Terpenuhi | Catatan |
 |----|---------|-----------|-----------|---------|
 | — | — | *(contoh format)* API key AI provider (OpenRouter/OpenAI/HuggingFace) | ❌ | Isi lewat Keys/API keys di Freebuff, pakai prefix `EXPO_PUBLIC_` |
+| K-003 | 2026-08-12 | **Supabase project + kredensial** — `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY` (+ `SUPABASE_SERVICE_ROLE_KEY` untuk operasi server-side, jangan di bundle) | ❌ | Buat project di supabase.com → buka [setup link](https://index.trygravity.ai/go/4bf32aeb-ed11-4cd3-b930-7ea94695839f) → paste nilai lewat Keys/API keys Freebuff. Perlu: 2 skema (`business` & `usage`), Google OAuth enabled |
+| K-004 | 2026-08-12 | **Google OAuth credentials** — Client ID/Secret untuk Supabase Auth provider Google | ❌ | Di-set dari dashboard Google Cloud Console → Supabase Auth providers; Client ID diset di Supabase, bukan di app |

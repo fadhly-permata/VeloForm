@@ -71,6 +71,23 @@ Fase 1 dan 2 bisa dikerjakan paralel; Fase 3 butuh Fase 2; Fase 4 butuh Fase 3.
 
 ---
 
+## Fase 6 — Migrasi Backend: SQLite → Supabase (R-028, 🔲 Baru)
+
+> **Alasan:** error inisialisasi SQLite web (expo-sqlite/wa-sqlite/OPFS) berulang.
+> **Keputusan user:** ganti database ke **Supabase** (Postgres), 2 skema, + login Google.
+
+| Area | Rencana |
+|------|---------|
+| **Skema `business`** | Struktur form Master/Transaction + Report (data bisnis) — RLS per-user |
+| **Skema `usage`** | Data penggunaan aplikasi (preferensi user, konfigurasi AI provider, telemetri/usage) — RLS per-user |
+| **Auth** | Google OAuth via Supabase Auth; seluruh query dibatasi ke user yang login (RLS) |
+| **Dep** | `@supabase/supabase-js` menggantikan `expo-sqlite` untuk data cloud; SQLite lokal opsional untuk offline cache |
+| **Env** | `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (server-side) — lihat K-003/K-004 |
+
+**Langkah:** (1) setup project Supabase + skema + Google OAuth → (2) client `lib/supabase.ts` + store auth Zustand → (3) gate login (Google) di App → (4) migrasikan helper DB (preferences, AI provider) ke query Supabase → (5) sesuaikan fase 3–5 ke skema Supabase.
+
+---
+
 ## Ketergantungan Antar Paket
 
 | Paket | Butuh paket sebelumnya |
