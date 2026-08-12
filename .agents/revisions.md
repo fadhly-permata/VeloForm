@@ -41,6 +41,7 @@
 | R-024 | 2026-08-12 | WP-19 CRUD Master & Transaction di `app_data.db` — lihat `.agents/PLAN.md` | Sedang | 🔲 Baru | Breakdown PRD |
 | R-025 | 2026-08-12 | WP-20 Report generator — lihat `.agents/PLAN.md` | Rendah | 🔲 Baru | Breakdown PRD |
 | R-026 | 2026-08-12 | Hilangkan nama kontributor "codebuff-team Codebuff" yang masih muncul di panel kontributor GitHub (history sudah bersih — kemungkinan cache GitHub; pantau sampai refresh) | Sedang | ⏸ Ditunda | Menunggu cache kontributor GitHub refresh (±24-48 jam) — laporan: `.agents/reports/120826_1018_record-codebuff-contributor.md` |
+| R-027 | 2026-08-12 | Fix icon/image tidak tampil di web (kotak kosong) — CORS origin proxy di Metro + fix transaksi SQLite web | Tinggi | ✅ Selesai | Dilaporkan user — laporan: `.agents/reports/120826_1042_fix-icons-cors-webdb.md` |
 
 ---
 

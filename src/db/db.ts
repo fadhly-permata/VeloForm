@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import { Platform } from 'react-native';
 
 /**
  * Local-first dual database architecture (see PRD):
@@ -39,11 +40,18 @@ async function migrate(db: SQLite.SQLiteDatabase, migrations: string[][]): Promi
   const row = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
   const current = row?.user_version ?? 0;
   for (let v = current; v < migrations.length; v++) {
-    await db.withExclusiveTransactionAsync(async (txn) => {
+    if (Platform.OS === 'web') {
+      // expo-sqlite web (wa-sqlite) does not support transactions.
       for (const stmt of migrations[v]) {
-        await txn.execAsync(stmt);
+        await db.execAsync(stmt);
       }
-    });
+    } else {
+      await db.withExclusiveTransactionAsync(async (txn) => {
+        for (const stmt of migrations[v]) {
+          await txn.execAsync(stmt);
+        }
+      });
+    }
     await db.execAsync(`PRAGMA user_version = ${v + 1};`);
   }
 }
@@ -177,6 +185,12 @@ export async function deleteAiProvider(id: string): Promise<void> {
 
 export async function setActiveAiProvider(id: string): Promise<void> {
   const db = await getSystemDb();
+  if (Platform.OS === 'web') {
+    // expo-sqlite web (wa-sqlite) does not support transactions.
+    await db.runAsync('UPDATE ai_providers SET is_active = 0');
+    await db.runAsync('UPDATE ai_providers SET is_active = 1 WHERE id = ?', id);
+    return;
+  }
   await db.withExclusiveTransactionAsync(async (txn) => {
     await txn.runAsync('UPDATE ai_providers SET is_active = 0');
     await txn.runAsync('UPDATE ai_providers SET is_active = 1 WHERE id = ?', id);

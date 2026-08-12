@@ -15,6 +15,11 @@
     "web": {
       "bundler": "metro"
     },
+    "extra": {
+      "router": {
+        "origin": "https://8081-1a2e1fca-28c2-4450-b41a-fc4c00ba44a6.daytonaproxy01.net"
+      }
+    },
     "plugins": [
       "expo-sqlite",
       "expo-secure-store"
