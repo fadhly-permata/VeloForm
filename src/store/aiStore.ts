@@ -71,8 +71,24 @@ export const useAiStore = create<AiState>()((set, get) => ({
 
       set({ providers, loaded: true });
     } catch (error) {
-      console.warn('Failed to load AI providers:', error);
-      set({ loaded: true });
+      // SQLite tidak tersedia (mis. web preview tanpa OPFS) — fallback: seed
+      // provider dari env langsung di memori supaya Studio tetap bisa dipakai.
+      console.warn('Failed to load AI providers (fallback to env):', error);
+      const envKey = process.env.EXPO_PUBLIC_OPENROUTER_API_KEY;
+      if (envKey && envKey.trim().length > 0) {
+        const seeded: AiProvider = {
+          id: 'env-openrouter',
+          type: 'openrouter',
+          name: 'OpenRouter (Testing)',
+          baseUrl: 'https://openrouter.ai/api/v1',
+          model: '',
+          isActive: true,
+        };
+        await saveSecret(secretKeyFor(seeded.id), envKey.trim()).catch(() => {});
+        set({ providers: [seeded], loaded: true });
+        return;
+      }
+      set({ providers: [], loaded: true });
     }
   },
 
