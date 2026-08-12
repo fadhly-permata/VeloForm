@@ -73,6 +73,18 @@ Fase 1 dan 2 bisa dikerjakan paralel; Fase 3 butuh Fase 2; Fase 4 butuh Fase 3.
 
 ## Fase 6 — Migrasi Backend: SQLite → Supabase (R-028, 🔲 Baru)
 
+---
+
+## ⭐ PRIORITAS BARU (dijalankan paling awal — diprioritaskan user, 12 Agu 11:18)
+
+| Revisi | Paket | Deskripsi | Prioritas | Status |
+|--------|-------|-----------|-----------|--------|
+| R-029 | WP-21 | **Desain ulang tema ala admin (AdminLTE)** — layout sidebar, dashboard admin, visual panel admin; menggantikan tema eksisting | Tinggi | 🔲 |
+| R-030 | WP-22 | **Auth Supabase lengkap** — login Google + email (dengan konfirmasi), user role (admin/operator/dll), gate AI-modify hanya untuk admin | Tinggi | 🔲 |
+| R-031 | WP-23 | **Multi-tenant per nama usaha** — grouping user per nama usaha; isolasi data & desain form antar usaha (A ≠ B) via RLS | Tinggi | 🔲 |
+
+**Urutan:** R-029 → R-030 → R-031 (lalu lanjut R-028 & fase 3–5).
+
 > **Alasan:** error inisialisasi SQLite web (expo-sqlite/wa-sqlite/OPFS) berulang.
 > **Keputusan user:** ganti database ke **Supabase** (Postgres), 2 skema, + login Google.
 
