@@ -32,17 +32,17 @@ Fase 1 dan 2 bisa dikerjakan paralel; Fase 3 butuh Fase 2; Fase 4 butuh Fase 3.
 
 | Revisi | Paket | Deskripsi | Prioritas | Status |
 |--------|-------|-----------|-----------|--------|
-| R-010 | WP-05 | **Halaman Settings** — UI pengaturan aplikasi, termasuk **theme mode switcher** (Light / Dark / Auto) | Tinggi | 🔲 |
-| R-011 | WP-06 | **Tabel `user_preferences`** di `system_metadata.db` (key/value + `updated_at`) + persistensi pilihan tema | Tinggi | 🔲 |
-| R-012 | WP-07 | **Dynamic Palette Propagation** — seluruh komponen (termasuk hasil generate AI) otomatis mengonsumsi token warna dari Theme Provider | Sedang | 🔲 |
+| R-010 | WP-05 | **Halaman Settings** — UI pengaturan aplikasi, termasuk **theme mode switcher** (Light / Dark / Auto) | Tinggi | ✅ |
+| R-011 | WP-06 | **Tabel `user_preferences`** di `system_metadata.db` (key/value + `updated_at`) + persistensi pilihan tema | Tinggi | ✅ |
+| R-012 | WP-07 | **Dynamic Palette Propagation** — seluruh komponen (termasuk hasil generate AI) otomatis mengonsumsi token warna dari Theme Provider | Sedang | ✅ |
 
 ## Fase 2 — Module 2: AI Provider Configurator
 
 | Revisi | Paket | Deskripsi | Prioritas | Status |
 |--------|-------|-----------|-----------|--------|
-| R-013 | WP-08 | **Konfigurasi multi-provider** — form kelola koneksi: OpenRouter, HuggingFace, OpenAI, Ollama, LiteLLM (base URL + model) | Tinggi | 🔲 |
-| R-014 | WP-09 | **Enkripsi API key** — penyimpanan aman kredensial di perangkat (tidak plaintext) | Tinggi | 🔲 |
-| R-015 | WP-10 | **Connectivity tester** — uji koneksi & validasi key ke provider terpilih | Sedang | 🔲 |
+| R-013 | WP-08 | **Konfigurasi multi-provider** — form kelola koneksi: OpenRouter, HuggingFace, OpenAI, Ollama, LiteLLM (base URL + model) | Tinggi | ✅ |
+| R-014 | WP-09 | **Enkripsi API key** — penyimpanan aman kredensial di perangkat (tidak plaintext) | Tinggi | ✅ |
+| R-015 | WP-10 | **Connectivity tester** — uji koneksi & validasi key ke provider terpilih | Sedang | ✅ |
 
 ## Fase 3 — Module 3: VeloForm Generation Studio
 

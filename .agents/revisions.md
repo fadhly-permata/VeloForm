@@ -24,12 +24,12 @@
 | R-007 | 2026-08-12 | WP-02 Sistem tema Light/Dark/Auto + palet token — lihat `.agents/PLAN.md` | Tinggi | ✅ Selesai | Fase 0 — laporan: `.agents/reports/120826_1010_fase0-foundation.md` |
 | R-008 | 2026-08-12 | WP-03 Dual SQLite (`system_metadata.db` & `app_data.db`) + migrasi — lihat `.agents/PLAN.md` | Tinggi | ✅ Selesai | Fase 0 — laporan: `.agents/reports/120826_1010_fase0-foundation.md` |
 | R-009 | 2026-08-12 | WP-04 State management Zustand (store global) — lihat `.agents/PLAN.md` | Sedang | ✅ Selesai | Fase 0 — laporan: `.agents/reports/120826_1010_fase0-foundation.md` |
-| R-010 | 2026-08-12 | WP-05 Halaman Settings + theme mode switcher — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
-| R-011 | 2026-08-12 | WP-06 Tabel `user_preferences` + persistensi tema — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
-| R-012 | 2026-08-12 | WP-07 Dynamic Palette Propagation — lihat `.agents/PLAN.md` | Sedang | 🔲 Baru | Breakdown PRD |
-| R-013 | 2026-08-12 | WP-08 Konfigurasi multi-provider AI (OpenRouter/HuggingFace/OpenAI/Ollama/LiteLLM) — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
-| R-014 | 2026-08-12 | WP-09 Enkripsi API key — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
-| R-015 | 2026-08-12 | WP-10 Connectivity tester — lihat `.agents/PLAN.md` | Sedang | 🔲 Baru | Breakdown PRD |
+| R-010 | 2026-08-12 | WP-05 Halaman Settings + theme mode switcher — lihat `.agents/PLAN.md` | Tinggi | ✅ Selesai | Fase 1 — laporan: `.agents/reports/120826_1034_fase1-fase2-settings-ai.md` |
+| R-011 | 2026-08-12 | WP-06 Tabel `user_preferences` + persistensi tema — lihat `.agents/PLAN.md` | Tinggi | ✅ Selesai | Fase 1 — laporan: `.agents/reports/120826_1034_fase1-fase2-settings-ai.md` |
+| R-012 | 2026-08-12 | WP-07 Dynamic Palette Propagation — lihat `.agents/PLAN.md` | Sedang | ✅ Selesai | Fase 1 — laporan: `.agents/reports/120826_1034_fase1-fase2-settings-ai.md` |
+| R-013 | 2026-08-12 | WP-08 Konfigurasi multi-provider AI (OpenRouter/HuggingFace/OpenAI/Ollama/LiteLLM) — lihat `.agents/PLAN.md` | Tinggi | ✅ Selesai | Fase 2 — laporan: `.agents/reports/120826_1034_fase1-fase2-settings-ai.md` |
+| R-014 | 2026-08-12 | WP-09 Enkripsi API key — lihat `.agents/PLAN.md` | Tinggi | ✅ Selesai | Fase 2 — laporan: `.agents/reports/120826_1034_fase1-fase2-settings-ai.md` |
+| R-015 | 2026-08-12 | WP-10 Connectivity tester — lihat `.agents/PLAN.md` | Sedang | ✅ Selesai | Fase 2 — laporan: `.agents/reports/120826_1034_fase1-fase2-settings-ai.md` |
 | R-016 | 2026-08-12 | WP-11 Studio dual-pane (prompt + live preview) — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
 | R-017 | 2026-08-12 | WP-12 AI chat refinement loop — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |
 | R-018 | 2026-08-12 | WP-13 Generator skema (Master/Transaction/Report/Workflow) — lihat `.agents/PLAN.md` | Tinggi | 🔲 Baru | Breakdown PRD |

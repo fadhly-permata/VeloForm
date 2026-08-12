@@ -18,6 +18,18 @@ const SYSTEM_MIGRATIONS: string[][] = [
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );`,
   ],
+  // v2 — AI provider configurations (PRD Module 2). API keys live in secure storage.
+  [
+    `CREATE TABLE IF NOT EXISTS ai_providers (
+      id TEXT PRIMARY KEY NOT NULL,
+      type TEXT NOT NULL,
+      name TEXT NOT NULL,
+      base_url TEXT NOT NULL,
+      model TEXT NOT NULL DEFAULT '',
+      is_active INTEGER NOT NULL DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );`,
+  ],
 ];
 
 // Business-data schema arrives with Phase 4/5 (WP-19, WP-20, WP-23).
@@ -75,4 +87,98 @@ export function getSystemDb(): Promise<SQLite.SQLiteDatabase> {
     systemDbPromise = openDatabase('system_metadata.db', SYSTEM_MIGRATIONS);
   }
   return systemDbPromise;
+}
+
+// --- user_preferences helpers (WP-06) ---
+
+export async function getPreference(key: string): Promise<string | null> {
+  const db = await getSystemDb();
+  const row = await db.getFirstAsync<{ value: string }>(
+    'SELECT value FROM user_preferences WHERE key = ?',
+    key
+  );
+  return row?.value ?? null;
+}
+
+export async function setPreference(key: string, value: string): Promise<void> {
+  const db = await getSystemDb();
+  await db.runAsync(
+    `INSERT INTO user_preferences (key, value, updated_at)
+     VALUES (?, ?, CURRENT_TIMESTAMP)
+     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP`,
+    key,
+    value
+  );
+}
+
+// --- ai_providers helpers (WP-08) ---
+
+export interface AiProviderRow {
+  id: string;
+  type: string;
+  name: string;
+  baseUrl: string;
+  model: string;
+  isActive: boolean;
+}
+
+interface DbAiProviderRow {
+  id: string;
+  type: string;
+  name: string;
+  base_url: string;
+  model: string;
+  is_active: number;
+}
+
+function mapProviderRow(row: DbAiProviderRow): AiProviderRow {
+  return {
+    id: row.id,
+    type: row.type,
+    name: row.name,
+    baseUrl: row.base_url,
+    model: row.model,
+    isActive: row.is_active === 1,
+  };
+}
+
+export async function getAiProviders(): Promise<AiProviderRow[]> {
+  const db = await getSystemDb();
+  const rows = await db.getAllAsync<DbAiProviderRow>(
+    'SELECT id, type, name, base_url, model, is_active FROM ai_providers ORDER BY created_at ASC'
+  );
+  return rows.map(mapProviderRow);
+}
+
+export async function upsertAiProvider(row: AiProviderRow): Promise<void> {
+  const db = await getSystemDb();
+  await db.runAsync(
+    `INSERT INTO ai_providers (id, type, name, base_url, model, is_active)
+     VALUES (?, ?, ?, ?, ?, ?)
+     ON CONFLICT(id) DO UPDATE SET
+       type = excluded.type,
+       name = excluded.name,
+       base_url = excluded.base_url,
+       model = excluded.model,
+       is_active = excluded.is_active`,
+    row.id,
+    row.type,
+    row.name,
+    row.baseUrl,
+    row.model,
+    row.isActive ? 1 : 0
+  );
+}
+
+export async function deleteAiProvider(id: string): Promise<void> {
+  const db = await getSystemDb();
+  await db.runAsync('DELETE FROM ai_providers WHERE id = ?', id);
+}
+
+export async function setActiveAiProvider(id: string): Promise<void> {
+  const db = await getSystemDb();
+  await db.withExclusiveTransactionAsync(async (txn) => {
+    await txn.runAsync('UPDATE ai_providers SET is_active = 0');
+    await txn.runAsync('UPDATE ai_providers SET is_active = 1 WHERE id = ?', id);
+  });
 }

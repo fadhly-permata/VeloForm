@@ -9,9 +9,16 @@ import SettingsScreen from '../screens/SettingsScreen';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
-const Tab = createBottomTabNavigator();
+export type RootTabParamList = {
+  Studio: undefined;
+  Workflow: undefined;
+  Reports: undefined;
+  Settings: undefined;
+};
 
-const TABS: { name: string; label: string; icon: IconName; iconActive: IconName }[] = [
+const Tab = createBottomTabNavigator<RootTabParamList>();
+
+const TABS: { name: keyof RootTabParamList; label: string; icon: IconName; iconActive: IconName }[] = [
   { name: 'Studio', label: 'Studio', icon: 'flash-outline', iconActive: 'flash' },
   { name: 'Workflow', label: 'Workflow', icon: 'git-network-outline', iconActive: 'git-network' },
   {
@@ -57,7 +64,7 @@ export default function RootTabs() {
   );
 }
 
-function screenFor(name: string) {
+function screenFor(name: keyof RootTabParamList) {
   switch (name) {
     case 'Studio':
       return StudioScreen;
