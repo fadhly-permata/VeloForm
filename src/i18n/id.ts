@@ -130,6 +130,43 @@ export const id: Messages = {
   // --- Reports ---
   'reports.title': 'Reports & Data',
   'reports.description': 'Master, Transactions & laporan dari data operasional bisnis. Hadir di Fase 5.',
+  'reports.subtitle': 'Data master, transaksi yang dikirim, dan laporan operasional.',
+
+  // --- Workflow (Fase 4) ---
+  'workflow.subtitle': 'Jalankan workflow keputusan pada data form dan pantau task queue lokal.',
+  'workflow.savedTitle': 'Workflow Tersimpan',
+  'workflow.empty': 'Belum ada workflow tersimpan.',
+  'workflow.emptyHint': 'Buat di Studio (tipe Workflow), lalu simpan.',
+  'workflow.taskQueue': 'Task Queue Lokal',
+  'workflow.queueEmpty': 'Tidak ada task terjadwal.',
+  'workflow.processNow': 'Proses sekarang',
+  'workflow.runnerTitle': 'Runner Workflow',
+  'workflow.noSelection': 'Pilih workflow di kiri untuk menjalankannya.',
+  'workflow.run': 'Jalankan Workflow',
+  'workflow.running': 'Menjalankan…',
+  'workflow.executionLog': 'Log Eksekusi',
+  'workflow.noLog': 'Jalankan workflow untuk melihat langkah eksekusinya di sini.',
+  'workflow.noSteps': 'Workflow ini tidak memiliki langkah.',
+
+  // --- Data / runtime (Fase 5) ---
+  'data.dbNotReady': 'Database belum siap — jalankan migrasi Supabase (supabase/README.md) supaya fitur ini aktif.',
+  'data.masterTitle': 'Skema Tersimpan (Master)',
+  'data.masterEmpty': 'Belum ada skema tersimpan — buat dulu di Studio.',
+  'data.transactionsTitle': 'Transaksi',
+  'data.transactionsEmpty': 'Belum ada transaksi — buka skema dan isi formulirnya.',
+  'data.reportTitle': 'Ringkasan Laporan',
+  'data.reportEmpty': 'Kirim beberapa transaksi untuk melihat ringkasannya di sini.',
+  'data.totalSchemas': 'Skema tersimpan',
+  'data.totalTransactions': 'Total transaksi',
+  'data.perForm': 'Per form',
+  'data.formPreview': 'Preview Form',
+  'data.fillFormTitle': 'Isi Form',
+  'data.detailTitle': 'Detail Transaksi',
+  'data.submit': 'Kirim',
+  'data.submitting': 'Mengirim…',
+  'data.submitted': 'Transaksi tersimpan',
+  'data.noFields': 'Skema ini tidak memiliki field.',
+  'runtime.required': 'Wajib diisi',
 
   // --- Studio (Fase 3) ---
   'studio.subtitle': 'Buat skema Master, Transaction, Report & Workflow dari prompt teks, dengan live preview dan penyempurnaan AI.',

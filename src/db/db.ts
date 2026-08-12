@@ -33,8 +33,22 @@ const SYSTEM_MIGRATIONS: string[][] = [
   ],
 ];
 
-// Business-data schema arrives with Phase 4/5 (WP-19, WP-20, WP-23).
-const APP_MIGRATIONS: string[][] = [];
+// v1 — local task queue (R-022). In-app scheduler; OS-level background fetch
+// (expo-background-fetch) is a follow-up that needs device testing.
+const APP_MIGRATIONS: string[][] = [
+  [
+    `CREATE TABLE IF NOT EXISTS task_queue (
+      id TEXT PRIMARY KEY NOT NULL,
+      name TEXT NOT NULL,
+      payload TEXT NOT NULL DEFAULT '{}',
+      run_at INTEGER NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      ran_at DATETIME,
+      result TEXT
+    );`,
+  ],
+];
 
 /** Tracks the applied schema version per DB. `PRAGMA user_version` is avoided
  *  because wa-sqlite (expo-sqlite web) cannot prepare PRAGMA statements. */
@@ -130,6 +144,14 @@ export function getSystemDb(): Promise<SQLite.SQLiteDatabase> {
     systemDbPromise = openDatabase('system_metadata.db', SYSTEM_MIGRATIONS);
   }
   return systemDbPromise;
+}
+
+/** Returns the business-data DB connection (app_data.db). */
+export function getAppDb(): Promise<SQLite.SQLiteDatabase> {
+  if (!appDbPromise) {
+    appDbPromise = openDatabase('app_data.db', APP_MIGRATIONS);
+  }
+  return appDbPromise;
 }
 
 // --- user_preferences helpers (WP-06) ---

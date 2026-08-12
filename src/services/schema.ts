@@ -26,6 +26,21 @@ export interface SchemaField {
   placeholder?: string;
   options?: string[];
   defaultValue?: string | number | boolean;
+  /** Conditional visibility (ON_CHANGE callback): show only when another field equals this value. */
+  visibleWhen?: { field: string; equals: string };
+}
+
+export interface WorkflowStep {
+  id: string;
+  type: 'action' | 'decision';
+  /** action step: instruction; `{{field_id}}` is replaced with the form value. */
+  action?: string;
+  /** decision step: field to compare. */
+  field?: string;
+  /** decision step: value to match (string comparison). */
+  equals?: string;
+  then?: WorkflowStep[];
+  else?: WorkflowStep[];
 }
 
 export interface GeneratedSchema {
@@ -36,8 +51,10 @@ export interface GeneratedSchema {
   fields: SchemaField[];
   /** workflow-only: what triggers the flow. */
   trigger?: string;
-  /** workflow-only: ordered actions to run. */
+  /** workflow-only: plain-language summary of the steps. */
   actions?: string[];
+  /** workflow-only: executable steps (action/decision nodes — R-023). */
+  steps?: WorkflowStep[];
 }
 
 export interface AiProviderConfig {
@@ -97,10 +114,17 @@ function buildSystemPrompt(kind: SchemaKind, currentSchema?: GeneratedSchema | n
   ];
   if (kind === 'workflow') {
     base.push(
-      `For kind "workflow" ALSO include: "trigger" (one sentence describing what starts the flow) and "actions" (array of 2-5 short steps).`,
+      `For kind "workflow" ALSO include: "trigger" (one sentence describing what starts the flow).`,
+      `"steps": an array of executable steps (2-5). Each step is either:`,
+      `  { "id": "step_1", "type": "action", "action": "<instruction, may reference form values as {{field_id}}>" }`,
+      `  or a decision node: { "id": "step_2", "type": "decision", "field": "<field_id>", "equals": "<value>", "then": [<steps>], "else": [<steps>] }`,
+      `Also include "actions": a short plain-language summary of the steps.`,
       `For workflow, "fields" represent the form inputs needed before the flow runs.`
     );
   }
+  base.push(
+    `You may also use "visibleWhen": { "field": "<other field id>", "equals": "<value>" } on a field to show it only when the other field equals that value.`
+  );
   if (currentSchema) {
     base.push(
       `The user will ask to refine the CURRENT schema below. Apply the requested change and return the COMPLETE updated schema JSON (all fields, including ones you did not change).`,
@@ -238,11 +262,15 @@ function parseSchemaResult(content: string, kind: SchemaKind): SchemaResult {
         placeholder: typeof f.placeholder === 'string' ? f.placeholder : undefined,
         options: Array.isArray(f.options) ? f.options.filter((o): o is string => typeof o === 'string') : undefined,
         defaultValue: f.defaultValue,
+        visibleWhen: f.visibleWhen && typeof f.visibleWhen === 'object'
+          ? { field: String(f.visibleWhen.field ?? ''), equals: String(f.visibleWhen.equals ?? '') }
+          : undefined,
       })),
       trigger: typeof json.trigger === 'string' ? json.trigger : undefined,
       actions: Array.isArray(json.actions)
         ? json.actions.filter((a): a is string => typeof a === 'string')
         : undefined,
+      steps: Array.isArray(json.steps) ? json.steps.map(normalizeStep) : undefined,
     };
     return { ok: true, schema };
   } catch (error) {
@@ -252,6 +280,20 @@ function parseSchemaResult(content: string, kind: SchemaKind): SchemaResult {
       message: error instanceof Error ? error.message : String(error),
     };
   }
+}
+
+function normalizeStep(raw: unknown, index = 0): WorkflowStep {
+  const s = (raw ?? {}) as Partial<WorkflowStep>;
+  const step: WorkflowStep = {
+    id: typeof s.id === 'string' && s.id ? s.id : `step_${index + 1}`,
+    type: s.type === 'decision' ? 'decision' : 'action',
+    action: typeof s.action === 'string' ? s.action : undefined,
+    field: typeof s.field === 'string' ? s.field : undefined,
+    equals: typeof s.equals === 'string' ? s.equals : undefined,
+    then: Array.isArray(s.then) ? s.then.map((c, i) => normalizeStep(c, i)) : undefined,
+    else: Array.isArray(s.else) ? s.else.map((c, i) => normalizeStep(c, i)) : undefined,
+  };
+  return step;
 }
 
 function validFieldType(type: unknown): FieldType {

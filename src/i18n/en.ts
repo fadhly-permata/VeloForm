@@ -130,6 +130,43 @@ export const en = {
   // --- Reports ---
   'reports.title': 'Reports & Data',
   'reports.description': 'Master, Transactions & reports from operational business data. Arrives in Phase 5.',
+  'reports.subtitle': 'Master data, submitted transactions, and operational reports.',
+
+  // --- Workflow (Phase 4) ---
+  'workflow.subtitle': 'Run saved decision workflows on form data and monitor the local task queue.',
+  'workflow.savedTitle': 'Saved Workflows',
+  'workflow.empty': 'No saved workflows yet.',
+  'workflow.emptyHint': 'Create one in the Studio (type Workflow), then save it.',
+  'workflow.taskQueue': 'Local Task Queue',
+  'workflow.queueEmpty': 'No scheduled tasks.',
+  'workflow.processNow': 'Process now',
+  'workflow.runnerTitle': 'Workflow Runner',
+  'workflow.noSelection': 'Select a workflow on the left to run it.',
+  'workflow.run': 'Run Workflow',
+  'workflow.running': 'Running…',
+  'workflow.executionLog': 'Execution Log',
+  'workflow.noLog': 'Run a workflow to see its execution steps here.',
+  'workflow.noSteps': 'This workflow has no steps.',
+
+  // --- Data / runtime (Phase 5) ---
+  'data.dbNotReady': 'Database is not ready yet — run the Supabase migration (supabase/README.md) to enable this feature.',
+  'data.masterTitle': 'Saved Schemas (Master)',
+  'data.masterEmpty': 'No saved schemas yet — create one in the Studio.',
+  'data.transactionsTitle': 'Transactions',
+  'data.transactionsEmpty': 'No submitted transactions yet — open a schema and fill the form.',
+  'data.reportTitle': 'Report Summary',
+  'data.reportEmpty': 'Submit a few transactions to see a summary here.',
+  'data.totalSchemas': 'Saved schemas',
+  'data.totalTransactions': 'Total transactions',
+  'data.perForm': 'Per form',
+  'data.formPreview': 'Form Preview',
+  'data.fillFormTitle': 'Fill Form',
+  'data.detailTitle': 'Transaction Detail',
+  'data.submit': 'Submit',
+  'data.submitting': 'Submitting…',
+  'data.submitted': 'Transaction saved',
+  'data.noFields': 'No fields in this schema.',
+  'runtime.required': 'Required',
 
   // --- Studio (Phase 3) ---
   'studio.subtitle': 'Create Master, Transaction, Report & Workflow schemas from text prompts, with live preview and AI refinement.',

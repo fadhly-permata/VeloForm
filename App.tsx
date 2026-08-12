@@ -11,6 +11,7 @@ import { initDatabases } from './src/db/db';
 import { useSettingsStore } from './src/store/settingsStore';
 import { useAiStore } from './src/store/aiStore';
 import { useAuthStore } from './src/store/authStore';
+import { startQueueScheduler } from './src/services/queue';
 
 export default function App() {
   const { isDark, paperTheme, colors } = useAppTheme();
@@ -22,6 +23,7 @@ export default function App() {
   // tidak boleh menghalangi yang lain (auth/tema/AI).
   useEffect(() => {
     let cancelled = false;
+    let stopScheduler: (() => void) | null = null;
     const init = async () => {
       await initDatabases().catch(() => {});
       if (cancelled) return;
@@ -29,10 +31,13 @@ export default function App() {
       await useSettingsStore.getState().loadLanguage();
       await useAiStore.getState().loadProviders();
       await useAuthStore.getState().init();
+      // Local task queue scheduler (R-022) — in-app while the app is open.
+      if (!cancelled) stopScheduler = startQueueScheduler();
     };
     void init();
     return () => {
       cancelled = true;
+      stopScheduler?.();
     };
   }, []);
 

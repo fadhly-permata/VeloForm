@@ -57,17 +57,17 @@ Fase 1 dan 2 bisa dikerjakan paralel; Fase 3 butuh Fase 2; Fase 4 butuh Fase 3.
 
 | Revisi | Paket | Deskripsi | Prioritas | Status |
 |--------|-------|-----------|-----------|--------|
-| R-020 | WP-15 | **Runtime form dinamis** — render form/layar dari skema yang di-generate | Tinggi | 🔲 |
-| R-021 | WP-16 | **Trigger form callbacks** — eksekusi logika bisnis pada `ON_SUBMIT`, `ON_CHANGE` | Tinggi | 🔲 |
-| R-022 | WP-17 | **Cron scheduler + local task queue** — `expo-task-manager` & `expo-background-fetch` untuk job terjadwal/antrean | Sedang | 🔲 |
-| R-023 | WP-18 | **Decision nodes & eksekusi workflow** — alur keputusan + eksekusi + catat queue logs ke `app_data.db` | Tinggi | 🔲 |
+| R-020 | WP-15 | **Runtime form dinamis** — render form/layar dari skema yang di-generate | Tinggi | ✅ |
+| R-021 | WP-16 | **Trigger form callbacks** — validasi & conditional visibility (`ON_CHANGE`), simpan transaksi saat submit (`ON_SUBMIT`) | Tinggi | ✅ |
+| R-022 | WP-17 | **Local task queue + scheduler in-app** — task queue SQLite + interval in-app; background OS (`expo-background-fetch`) ditunda (butuh test device) | Sedang | ✅ (in-app) |
+| R-023 | WP-18 | **Decision nodes & eksekusi workflow** — engine action/decision steps + log eksekusi | Tinggi | ✅ |
 
 ## Fase 5 — Data Bisnis & Laporan
 
 | Revisi | Paket | Deskripsi | Prioritas | Status |
 |--------|-------|-----------|-----------|--------|
-| R-024 | WP-19 | **CRUD Master & Transaction** — data operasional bisnis di `app_data.db` | Sedang | 🔲 |
-| R-025 | WP-20 | **Report generator** — tampilkan/laporan dari data operasional (per PRD: Master, Transactions, Reports) | Rendah | 🔲 |
+| R-024 | WP-19 | **CRUD Master & Transaction** — list + preview + isi form + hapus skema & transaksi (Supabase `business.*`) | Sedang | ✅ |
+| R-025 | WP-20 | **Report generator** — ringkasan laporan dari data transaksi (total, per-form, terbaru) | Rendah | ✅ |
 
 ---
 
